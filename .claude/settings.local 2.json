@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(/usr/local/bin/npm create:*)",
+      "Bash(1:*)",
+      "Bash(/usr/local/bin/node --version)",
+      "Bash(export PATH=\"/usr/local/bin:$PATH\")",
+      "Bash(printf 'y\\\\n')",
+      "Bash(npx --yes create-vite@latest \"/Users/erikhedenstedt/Documents/A11Y material/A11Y_granskare\" --template react)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
