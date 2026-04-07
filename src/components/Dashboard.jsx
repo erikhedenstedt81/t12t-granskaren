@@ -105,7 +105,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       </div>
 
       {formProject !== undefined && (
-        <Modal onClose={() => setFormProject(undefined)}>
+        <Modal onClose={() => setFormProject(undefined)} label={formProject ? 'Redigera projekt' : 'Nytt projekt'}>
           <ProjectForm
             project={formProject}
             onSaved={() => { setFormProject(undefined); loadAll() }}

@@ -1,16 +1,25 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   getAuditorProfile, saveAuditorProfile,
   getAppSettings,    saveAppSettings,
   exportAllData,     importAllData, clearAllData,
 } from '../store/storage.js'
 import { toast } from './Toast.jsx'
+import { useFocusTrap } from '../hooks/useFocusTrap.js'
 
 export default function Settings({ onClose }) {
   const [profile,  setProfile]  = useState(getAuditorProfile)
   const [settings, setSettings] = useState(getAppSettings)
   const [confirm,  setConfirm]  = useState(false)
-  const importRef = useRef(null)
+  const importRef  = useRef(null)
+  const dialogRef  = useRef(null)
+  const trapKeyDown = useFocusTrap(dialogRef)
+
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   function handleProfileChange(field, value) {
     setProfile(p => ({ ...p, [field]: value }))
@@ -64,7 +73,7 @@ export default function Settings({ onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-box st-box" role="dialog" aria-modal="true" aria-label="Inställningar">
+      <div ref={dialogRef} className="modal-box st-box" role="dialog" aria-modal="true" aria-label="Inställningar" onKeyDown={trapKeyDown}>
         <button className="modal-close" onClick={onClose} aria-label="Stäng">×</button>
         <h2 className="pf-title">Inställningar</h2>
 

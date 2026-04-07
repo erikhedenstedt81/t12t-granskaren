@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getProjects, deleteProject, getFindings } from '../store/storage.js'
 import ProjectForm from './ProjectForm.jsx'
+import { useFocusTrap } from '../hooks/useFocusTrap.js'
 
 export default function ProjectList({ onOpen }) {
   const [projects, setProjects] = useState([])
@@ -72,7 +73,7 @@ export default function ProjectList({ onOpen }) {
       </main>
 
       {formProject !== undefined && (
-        <Modal onClose={() => setFormProject(undefined)}>
+        <Modal onClose={() => setFormProject(undefined)} label={formProject ? 'Redigera projekt' : 'Nytt projekt'}>
           <ProjectForm
             project={formProject}
             onSaved={() => { setFormProject(undefined); reload() }}
@@ -135,7 +136,10 @@ function ProjectCard({ project, onClick, onEdit, onDelete }) {
   )
 }
 
-export function Modal({ onClose, children }) {
+export function Modal({ onClose, label, children }) {
+  const dialogRef = useRef(null)
+  const trapKeyDown = useFocusTrap(dialogRef)
+
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose() }
     document.addEventListener('keydown', onKey)
@@ -147,7 +151,14 @@ export function Modal({ onClose, children }) {
       className="modal-backdrop"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div className="modal-box" role="dialog" aria-modal="true">
+      <div
+        ref={dialogRef}
+        className="modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-label={label ?? 'Dialog'}
+        onKeyDown={trapKeyDown}
+      >
         <button className="modal-close" onClick={onClose} aria-label="Stäng dialog">
           ×
         </button>

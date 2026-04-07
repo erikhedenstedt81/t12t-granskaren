@@ -16,7 +16,7 @@ function getCriterion(id) { return wcag22.find(c => c.id === id) }
 
 /* ─── Root ───────────────────────────────────────────────────────────────────── */
 
-export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpenReport }) {
+export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpenReport, onOpenGuidedSetup, onOpenGuided }) {
   const [project,       setProject]       = useState(null)
   const [findings,      setFindings]      = useState([])
   const [tab,           setTab]           = useState('findings')
@@ -75,20 +75,36 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
                 {' · '}WCAG {project.wcagVersion} {project.conformanceTarget}
               </p>
             </div>
-            <div style={{ display:'flex', gap:8 }}>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
               {onOpenReport && (
                 <button
                   className="btn btn-secondary btn-sm"
                   onClick={() => onOpenReport(projectId)}
                 >
-                  📄 Visa rapport
+                  Visa rapport
+                </button>
+              )}
+              {onOpenGuided && project.auditContext && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onOpenGuided(projectId)}
+                >
+                  Fortsätt guidad granskning
+                </button>
+              )}
+              {onOpenGuidedSetup && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onOpenGuidedSetup(projectId)}
+                >
+                  Guidad granskning
                 </button>
               )}
               <button
                 className="btn btn-primary btn-sm"
                 onClick={() => onOpenAudit(projectId, null)}
               >
-                Öppna granskning
+                Fri granskning
               </button>
             </div>
           </div>
@@ -178,10 +194,14 @@ function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, 
   }, [findings, criterionFilter, sortCol, sortDir])
 
   function SortTh({ col, label }) {
-    const active = sortCol === col
+    const active   = sortCol === col
+    const ariaSort = active ? (sortDir === 'desc' ? 'descending' : 'ascending') : 'none'
     return (
-      <th className={`ft-th ft-th-sortable ${active ? 'ft-th-active' : ''}`}>
-        <button className="ft-sort-btn" onClick={() => toggleSort(col)} aria-sort={active ? sortDir : undefined}>
+      <th
+        className={`ft-th ft-th-sortable ${active ? 'ft-th-active' : ''}`}
+        aria-sort={ariaSort}
+      >
+        <button className="ft-sort-btn" onClick={() => toggleSort(col)}>
           {label}
           <span className="ft-sort-icon" aria-hidden="true">
             {active ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ' ↕'}
@@ -294,25 +314,29 @@ function FindingsTable({ rows, onOpenFinding, SortTh }) {
 function FindingRow({ finding, onEdit }) {
   const criterion = getCriterion(finding.wcagCriterionId)
 
+  const statusKey = finding.status === 'in-progress' ? 'progress' : finding.status === 'wont-fix' ? 'wontfix' : finding.status
+
   return (
     <tr
       className="ft-tr"
       onClick={onEdit}
-      onKeyDown={e => e.key === 'Enter' && onEdit()}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onEdit())}
       tabIndex={0}
-      aria-label={`Fynd: ${finding.title}`}
+      aria-label={`Fynd: ${finding.title || 'Namnlöst fynd'}, allvarlighet ${SEVERITY_LABEL[finding.severity]}, status ${STATUS_LABEL[finding.status]}`}
     >
       <td className="ft-td">
-        <span className={`badge badge-${finding.severity}`}>{SEVERITY_LABEL[finding.severity]}</span>
+        <span className={`badge badge-${finding.severity}`} aria-label={`Allvarlighetsgrad: ${SEVERITY_LABEL[finding.severity]}`}>
+          {SEVERITY_LABEL[finding.severity]}
+        </span>
       </td>
       <td className="ft-td ft-td-criterion">
         <span className="ft-criterion-id">
           {finding.eaaRequirementId ?? finding.wcagCriterionId ?? '—'}
         </span>
         {criterion && (
-          <span className={`badge badge-level-${criterion.level.toLowerCase()}`}>{criterion.level}</span>
+          <span className={`badge badge-level-${criterion.level.toLowerCase()}`} aria-label={`WCAG-nivå ${criterion.level}`}>{criterion.level}</span>
         )}
-        {criterion?.eaaCritical && <span className="badge badge-eaa">EAA</span>}
+        {criterion?.eaaCritical && <span className="badge badge-eaa" aria-label="EAA-kritiskt">EAA</span>}
       </td>
       <td className="ft-td ft-td-title">
         <span className="ft-title">{finding.title || 'Namnlöst fynd'}</span>
@@ -322,7 +346,7 @@ function FindingRow({ finding, onEdit }) {
         <span className="ft-url" title={finding.url}>{finding.url || '—'}</span>
       </td>
       <td className="ft-td">
-        <span className={`badge badge-status-${finding.status === 'in-progress' ? 'progress' : finding.status === 'wont-fix' ? 'wontfix' : finding.status}`}>
+        <span className={`badge badge-status-${statusKey}`} aria-label={`Status: ${STATUS_LABEL[finding.status]}`}>
           {STATUS_LABEL[finding.status]}
         </span>
       </td>

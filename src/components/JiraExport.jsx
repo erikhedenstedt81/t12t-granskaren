@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { getFindings } from '../store/storage.js'
 import { toast } from './Toast.jsx'
+import { useFocusTrap } from '../hooks/useFocusTrap.js'
 
 // ─── Priority / status maps ───────────────────────────────────────────────────
 
@@ -80,6 +81,14 @@ export default function JiraExport({ project, onClose }) {
   const [selected,    setSelected]    = useState(defaultSelected)
   const [projectKey,  setProjectKey]  = useState('')
   const [format,      setFormat]      = useState('json')  // 'json' | 'csv'
+  const dialogRef  = useRef(null)
+  const trapKeyDown = useFocusTrap(dialogRef)
+
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   const sorted = useMemo(
     () => [...allFindings].sort((a, b) => SEV_ORDER.indexOf(a.severity) - SEV_ORDER.indexOf(b.severity)),
@@ -130,7 +139,7 @@ export default function JiraExport({ project, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-box je-box" role="dialog" aria-modal="true" aria-label="Jira-export">
+      <div ref={dialogRef} className="modal-box je-box" role="dialog" aria-modal="true" aria-label="Jira-export" onKeyDown={trapKeyDown}>
         <button className="modal-close" onClick={onClose} aria-label="Stäng">×</button>
         <h2 className="pf-title">Jira-export</h2>
         <p className="je-subtitle">{project.clientName} · {project.name}</p>

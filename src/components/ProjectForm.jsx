@@ -29,11 +29,12 @@ export default function ProjectForm({ project, onSaved, onCancel }) {
       <h2 className="pf-title">{project ? 'Redigera projekt' : 'Nytt projekt'}</h2>
 
       <div className="field">
-        <label className="field-label" htmlFor="pf-name">Projektnamn *</label>
+        <label className="field-label" htmlFor="pf-name">Projektnamn <span aria-hidden="true">*</span><span className="sr-only">(obligatoriskt)</span></label>
         <input
           id="pf-name"
           className="input"
           required
+          aria-required="true"
           value={form.name}
           onChange={set('name')}
           placeholder="t.ex. Kommunens webbplats 2025"
@@ -42,11 +43,12 @@ export default function ProjectForm({ project, onSaved, onCancel }) {
       </div>
 
       <div className="field">
-        <label className="field-label" htmlFor="pf-client">Kundnamn *</label>
+        <label className="field-label" htmlFor="pf-client">Kundnamn <span aria-hidden="true">*</span><span className="sr-only">(obligatoriskt)</span></label>
         <input
           id="pf-client"
           className="input"
           required
+          aria-required="true"
           value={form.clientName}
           onChange={set('clientName')}
           placeholder="t.ex. Stockholms stad"

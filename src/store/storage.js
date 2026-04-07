@@ -230,8 +230,28 @@ export function clearAllData() {
   for (const p of projects) {
     localStorage.removeItem(findingsStorageKey(p.id))
     localStorage.removeItem(eaaStorageKey(p.id))
+    localStorage.removeItem(guidedProgressKey(p.id))
   }
   localStorage.removeItem(PROJECTS_KEY)
   localStorage.removeItem(PROFILE_KEY)
   localStorage.removeItem(SETTINGS_KEY)
+}
+
+// ─── Guided audit progress ────────────────────────────────────────────────────
+
+function guidedProgressKey(projectId) {
+  return `a11y_guided_${projectId}`
+}
+
+/**
+ * Returns guided progress for a project.
+ * Structure: { [url]: { [criterionId]: 'passed'|'finding'|'na'|null } }
+ */
+export function getGuidedProgress(projectId) {
+  const raw = localStorage.getItem(guidedProgressKey(projectId))
+  return raw ? JSON.parse(raw) : {}
+}
+
+export function saveGuidedProgress(projectId, progress) {
+  localStorage.setItem(guidedProgressKey(projectId), JSON.stringify(progress))
 }

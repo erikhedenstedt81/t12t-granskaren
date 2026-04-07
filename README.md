@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# t12t-granskaren
-Ett verktyg för att genomföra tillgänglighetsgranskningar som hjälper till med att skapa rapport och Jira-tickets
-=======
 # Tillgänglighetsgranskaren
 
 Ett lokalt verktyg för professionell WCAG 2.2-granskning och EAA-efterlevnad. Körs helt i webbläsaren – all data sparas i localStorage, ingen backend krävs.
@@ -40,7 +36,7 @@ Fynd-formulär i 5 steg:
 2. **Kriterium** – WCAG 2.2-sökruta med tangentbordsnavigation, eller EAA-krav
 3. **Fyndet** – titel, teknisk beskrivning, kundförklaring, föreslagen åtgärd, berörda användargrupper
 4. **Klassificering** – allvarlighetsgrad (auto-beräknas), nyckelflöde, status
-5. **Screenshot** – drag-och-släpp bild
+5. **Screenshot** – drag-och-släpp bild, filuppladdning eller Cmd+V/Ctrl+V från urklipp
 
 Kortkommando: `Ctrl+S` / `Cmd+S` sparar från vilket steg som helst.
 
@@ -60,7 +56,7 @@ Genererar en komplett HTML-rapport med:
 
 ## Inställningar
 
-Öppnas via kugghjulknappen i Dashboard-headern.
+Öppnas via kugghjulsknappen i Dashboard-headern.
 
 - **Granskarprofil** – namn, e-post och företag. Prefylls automatiskt i nya projekt.
 - **Standardspråk** – välj svenska eller engelska som standardspråk för nya rapporter.
@@ -95,4 +91,3 @@ Auto-beräkning kan alltid åsidosättas manuellt per fynd.
 - Screenshots lagras som base64 i localStorage; stora bilder kan begränsa localStorage-kapaciteten (~5 MB per domän).
 - Verktyget kräver JavaScript och en modern webbläsare (Chrome 90+, Firefox 88+, Safari 14+).
 - Ingen autentisering – lämpat för ensam granskare eller ett litet team på samma maskin.
->>>>>>> aa7bd51 (Första versionen)

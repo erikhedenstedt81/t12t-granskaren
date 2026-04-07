@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import Dashboard       from './components/Dashboard.jsx'
-import ProjectOverview from './components/ProjectOverview.jsx'
-import AuditView       from './components/AuditView.jsx'
-import CustomerReport  from './components/CustomerReport.jsx'
-import Settings        from './components/Settings.jsx'
+import Dashboard        from './components/Dashboard.jsx'
+import ProjectOverview  from './components/ProjectOverview.jsx'
+import AuditView        from './components/AuditView.jsx'
+import CustomerReport   from './components/CustomerReport.jsx'
+import Settings         from './components/Settings.jsx'
+import AuditSetup       from './components/AuditSetup.jsx'
+import GuidedAuditView  from './components/GuidedAuditView.jsx'
 import { ToastContainer } from './components/Toast.jsx'
 import { getProject } from './store/storage.js'
 
@@ -18,14 +20,16 @@ export default function App() {
   // ── Dynamic page title ──────────────────────────────────────────────────────
   useEffect(() => {
     let title = BASE_TITLE
-    if (route.view === 'audit' || route.view === 'overview' || route.view === 'report') {
+    if (['audit', 'overview', 'report', 'setup', 'guided'].includes(route.view)) {
       const project = getProject(route.projectId)
       if (project) {
-        const viewLabel = route.view === 'audit'
-          ? 'Granskning'
-          : route.view === 'report'
-          ? 'Rapport'
-          : 'Projektöversikt'
+        const viewLabel = {
+          audit:    'Granskning',
+          report:   'Rapport',
+          overview: 'Projektöversikt',
+          setup:    'Guidad granskning – uppstart',
+          guided:   'Guidad granskning',
+        }[route.view] ?? ''
         title = `${project.clientName} – ${viewLabel} | ${BASE_TITLE}`
       }
     }
@@ -55,6 +59,24 @@ export default function App() {
           />
         )}
 
+        {route.view === 'setup' && (
+          <AuditSetup
+            project={getProject(route.projectId)}
+            onDone={project => setRoute({ view: 'guided', projectId: project.id })}
+            onCancel={() => setRoute({ view: 'overview', projectId: route.projectId })}
+          />
+        )}
+
+        {route.view === 'guided' && (
+          <GuidedAuditView
+            projectId={route.projectId}
+            onBack={() => setRoute({ view: 'overview', projectId: route.projectId })}
+            onOpenAudit={(projectId, findingId) =>
+              setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
+            }
+          />
+        )}
+
         {route.view === 'overview' && (
           <ProjectOverview
             projectId={route.projectId}
@@ -63,6 +85,8 @@ export default function App() {
               setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
             }
             onOpenReport={projectId => setRoute({ view: 'report', projectId })}
+            onOpenGuidedSetup={projectId => setRoute({ view: 'setup', projectId })}
+            onOpenGuided={projectId => setRoute({ view: 'guided', projectId })}
           />
         )}
 

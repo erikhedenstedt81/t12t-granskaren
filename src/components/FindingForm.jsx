@@ -71,7 +71,7 @@ function isStepDone(step, form) {
 
 /* ─── Main component ─────────────────────────────────────────────────────────── */
 
-export default function FindingForm({ project, finding, onSaved, onNew }) {
+export default function FindingForm({ project, finding, onSaved, onNew, onCancel }) {
   const [step, setStep] = useState(1)
   const [form, setForm] = useState(() => initForm(finding, project))
   const set = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), [])
@@ -166,97 +166,106 @@ export default function FindingForm({ project, finding, onSaved, onNew }) {
 
   return (
     <div className="ff-root" aria-label="Fynd-formulär">
-      {/* ── Step indicator ── */}
-      <nav className="ff-steps" aria-label="Formulärsteg">
-        {STEPS.map(s => {
-          const done   = s.id < step && isStepDone(s.id, form)
-          const active = s.id === step
-          return (
-            <button
-              key={s.id}
-              className={`ff-step-btn ${active ? 'active' : ''} ${done ? 'done' : ''}`}
-              onClick={() => setStep(s.id)}
-              aria-current={active ? 'step' : undefined}
-              aria-label={`Steg ${s.id}: ${s.label}${done ? ' (klart)' : ''}`}
-            >
-              <span className="ff-step-dot" aria-hidden="true">
-                {done ? '✓' : s.id}
-              </span>
-              {s.label}
-            </button>
-          )
-        })}
-      </nav>
 
-      {/* ── Content ── */}
+      {/* ── Scrollable area ── */}
       <div className="ff-content">
-        {step === 1 && (
-          <Step1 form={form} set={set} />
-        )}
-        {step === 2 && (
-          <Step2
-            form={form}
-            set={set}
-            selectedCriterion={selectedCriterion}
-          />
-        )}
-        {step === 3 && (
-          <Step3
-            form={form}
-            set={set}
-            setForm={setForm}
-            toggleAffected={toggleAffected}
-          />
-        )}
-        {step === 4 && (
-          <Step4
-            form={form}
-            set={set}
-            setForm={setForm}
-            autoSeverity={autoSeverity}
-            severityReason={severityReason}
-            setSeverityManual={setSeverityManual}
-          />
-        )}
-        {step === 5 && (
-          <Step5
-            form={form}
-            set={set}
-          />
-        )}
+        <div className="ff-card">
+
+          {/* Step tabs — role="tablist" for proper AT announcement */}
+          <div className="ff-steps" role="tablist" aria-label="Formulärsteg">
+            {STEPS.map(s => {
+              const done   = s.id < step && isStepDone(s.id, form)
+              const active = s.id === step
+              return (
+                <button
+                  key={s.id}
+                  id={`ff-tab-${s.id}`}
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls={`ff-panel-${s.id}`}
+                  className={`ff-step-btn ${active ? 'active' : ''} ${done ? 'done' : ''}`}
+                  onClick={() => setStep(s.id)}
+                  tabIndex={active ? 0 : -1}
+                >
+                  <span className="ff-step-dot" aria-hidden="true">
+                    {done ? '✓' : s.id}
+                  </span>
+                  {s.label}
+                  {done && <span className="sr-only"> (klart)</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Form step content — role="tabpanel" */}
+          <div
+            className="ff-card-body"
+            role="tabpanel"
+            id={`ff-panel-${step}`}
+            aria-labelledby={`ff-tab-${step}`}
+          >
+            {step === 1 && <Step1 form={form} set={set} />}
+            {step === 2 && (
+              <Step2 form={form} set={set} selectedCriterion={selectedCriterion} />
+            )}
+            {step === 3 && (
+              <Step3 form={form} set={set} setForm={setForm} toggleAffected={toggleAffected} />
+            )}
+            {step === 4 && (
+              <Step4
+                form={form} set={set} setForm={setForm}
+                autoSeverity={autoSeverity} severityReason={severityReason}
+                setSeverityManual={setSeverityManual}
+              />
+            )}
+            {step === 5 && <Step5 form={form} set={set} />}
+          </div>
+
+          {/* Prev / Next — directly below form content */}
+          <div className="ff-nav">
+            <div className="ff-nav-left">
+              {step > 1 && (
+                <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s - 1)}>
+                  ← Föregående
+                </button>
+              )}
+            </div>
+            <div className="ff-nav-right">
+              {step < 5 && (
+                <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s + 1)}>
+                  Nästa →
+                </button>
+              )}
+            </div>
+          </div>
+
+        </div>
       </div>
 
-      {/* ── Footer ── */}
+      {/* ── Persistent footer: Save / New ── */}
       <div className="ff-footer">
-        <div className="ff-footer-left">
-          {step > 1 && (
-            <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s - 1)}>
-              ← Föregående
-            </button>
-          )}
-          {step < 5 && (
-            <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s + 1)}>
-              Nästa →
-            </button>
-          )}
-        </div>
-        <div className="ff-footer-right">
-          <span className="ff-shortcut">
-            <kbd>Ctrl</kbd>+<kbd>S</kbd> sparar
-          </span>
+        <span className="ff-shortcut">
+          <kbd>Ctrl</kbd>+<kbd>S</kbd> sparar
+        </span>
+        {onCancel ? (
+          <button className="btn btn-secondary btn-sm" onClick={onCancel}>
+            Avbryt
+          </button>
+        ) : (
           <button className="btn btn-secondary btn-sm" onClick={handleNew}>
             Nytt fynd
           </button>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={handleSave}
-            disabled={!canSave}
-            title={!canSave ? 'Fyll i titel och välj kriterium' : undefined}
-          >
-            {finding ? 'Spara ändringar' : 'Spara fynd'}
-          </button>
-        </div>
+        )}
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handleSave}
+          disabled={!canSave}
+          title={!canSave ? 'Fyll i titel och välj kriterium' : undefined}
+        >
+          {finding ? 'Spara ändringar' : 'Spara fynd'}
+        </button>
       </div>
+
     </div>
   )
 }
@@ -278,6 +287,7 @@ function Step1({ form, set }) {
           value={form.url}
           onChange={e => set('url', e.target.value)}
           placeholder="https://example.com/sidan"
+          aria-required="true"
           autoFocus
         />
       </div>
@@ -290,6 +300,7 @@ function Step1({ form, set }) {
           value={form.pageTitle}
           onChange={e => set('pageTitle', e.target.value)}
           placeholder="t.ex. Startsidan, Inloggningssidan, Produktsida – Skjorta"
+          aria-required="true"
         />
       </div>
     </div>
@@ -355,13 +366,15 @@ function Step3({ form, set, setForm, toggleAffected }) {
 
       <div className="field">
         <label className="field-label" htmlFor="ff-title">Titel *</label>
-        <span className="field-hint">Kort intern rubrik, t.ex. "Knapp saknar label på betalningssidan"</span>
+        <span id="ff-title-hint" className="field-hint">Kort intern rubrik, t.ex. "Knapp saknar label på betalningssidan"</span>
         <input
           id="ff-title"
           className="input"
           value={form.title}
           onChange={e => set('title', e.target.value)}
           placeholder="Kort beskrivande titel"
+          aria-required="true"
+          aria-describedby="ff-title-hint"
           autoFocus
         />
       </div>
@@ -693,16 +706,14 @@ function CriterionHint({ criterion }) {
 
 function EaaList({ value, onChange }) {
   return (
-    <div className="eaa-list" role="listbox" aria-label="EAA-krav">
+    <div className="eaa-list" role="group" aria-label="EAA-krav">
       {eaaRequirements.map(req => (
-        <div
+        <button
           key={req.id}
-          role="option"
-          aria-selected={value === req.id}
+          type="button"
+          aria-pressed={value === req.id}
           className={`eaa-item ${value === req.id ? 'selected' : ''}`}
           onClick={() => onChange(value === req.id ? null : req.id)}
-          onKeyDown={e => e.key === 'Enter' && onChange(value === req.id ? null : req.id)}
-          tabIndex={0}
         >
           <div className="eaa-item-header">
             <span className="badge badge-eaa">{req.id}</span>
@@ -710,7 +721,7 @@ function EaaList({ value, onChange }) {
             <span className="eaa-item-title">{req.title}</span>
           </div>
           <p className="eaa-item-desc">{req.description}</p>
-        </div>
+        </button>
       ))}
     </div>
   )
@@ -719,14 +730,50 @@ function EaaList({ value, onChange }) {
 /* ─── Screenshot upload ──────────────────────────────────────────────────────── */
 
 function ScreenshotUpload({ value, onChange }) {
-  const [drag, setDrag] = useState(false)
+  const [drag,      setDrag]      = useState(false)
+  const [pasteErr,  setPasteErr]  = useState(false)
 
+  // ── Base64 converter (shared by file picker, drag-drop and paste) ───────────
   function handleFile(file) {
     if (!file || !file.type.startsWith('image/')) return
     const reader = new FileReader()
-    reader.onload = e => onChange(e.target.result)
+    reader.onload = e => { onChange(e.target.result); setPasteErr(false) }
     reader.readAsDataURL(file)
   }
+
+  // ── Paste from clipboard ─────────────────────────────────────────────────────
+  useEffect(() => {
+    function handlePaste(e) {
+      // Ignore paste events that originate inside a text input / textarea
+      const tag = document.activeElement?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+
+      const items = e.clipboardData?.items
+      if (!items) return
+
+      let foundImage = false
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          foundImage = true
+          const file = item.getAsFile()
+          if (file) handleFile(file)
+          break
+        }
+      }
+
+      if (!foundImage) {
+        setPasteErr(true)
+        setTimeout(() => setPasteErr(false), 3000)
+      }
+    }
+
+    document.addEventListener('paste', handlePaste)
+    return () => document.removeEventListener('paste', handlePaste)
+  }, [onChange])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Detect OS for shortcut hint ──────────────────────────────────────────────
+  const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
+  const pasteKey = isMac ? 'Cmd+V' : 'Ctrl+V'
 
   return (
     <div
@@ -759,8 +806,14 @@ function ScreenshotUpload({ value, onChange }) {
             onChange={e => handleFile(e.target.files[0])}
           />
           <span className="screenshot-icon" aria-hidden="true">📷</span>
-          <span>Dra och släpp bild här, eller <strong>klicka för att välja</strong></span>
-          <span className="screenshot-hint">PNG, JPG, WebP, GIF</span>
+          <span>
+            Dra och släpp, klicka för att välja, eller tryck{' '}
+            <kbd className="screenshot-kbd">{pasteKey}</kbd>
+          </span>
+          {pasteErr
+            ? <span className="screenshot-paste-err" role="alert">Urklippet innehåller ingen bild</span>
+            : <span className="screenshot-hint">PNG, JPG, WebP, GIF</span>
+          }
         </label>
       )}
     </div>
