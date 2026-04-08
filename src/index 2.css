@@ -83,17 +83,8 @@ a { color: inherit; }
 /* ═══════════════════════════════════════════════════════
    BASE
 ═══════════════════════════════════════════════════════ */
-html, body { height: 100%; overflow: hidden; font-family: var(--font); font-size: 14px; color: var(--text); background: var(--bg); line-height: 1.5; }
-#root { height: 100%; overflow: hidden; display: flex; flex-direction: column; }
-
-/* App shell — <main id="main-content"> is the only flex child that grows */
-#main-content {
-  flex: 1;
-  min-height: 0;       /* critical: lets flex child shrink below content size */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var(--text); background: var(--bg); line-height: 1.5; }
+#root { height: 100%; display: flex; flex-direction: column; }
 
 /* Screen-reader only */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -494,9 +485,9 @@ kbd { font-family: var(--font-mono); font-size: 10px; background: var(--bg); bor
 /* ═══════════════════════════════════════════════════════
    DASHBOARD
 ═══════════════════════════════════════════════════════ */
-.db-root { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.db-root { display: flex; flex-direction: column; min-height: 100%; }
 
-.db-header { background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.db-header { background: var(--surface); border-bottom: 1px solid var(--border); }
 .db-header-inner {
   max-width: 1280px; margin: 0 auto; padding: 14px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -506,7 +497,7 @@ kbd { font-family: var(--font-mono); font-size: 10px; background: var(--bg); bor
 .db-title    { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
 .db-subtitle { font-size: 12px; color: var(--text-3); display: block; }
 
-.db-main { flex: 1; min-height: 0; overflow-y: auto; max-width: 1280px; width: 100%; margin: 0 auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 28px; }
+.db-main { flex: 1; max-width: 1280px; width: 100%; margin: 0 auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 28px; }
 
 /* ── Stat cards ── */
 .db-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
