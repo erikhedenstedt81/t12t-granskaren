@@ -109,7 +109,16 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
         <Modal onClose={() => setFormProject(undefined)} label={formProject ? 'Redigera projekt' : 'Nytt projekt'}>
           <ProjectForm
             project={formProject}
-            onSaved={() => { setFormProject(undefined); loadAll() }}
+            onSaved={saved => {
+              setFormProject(undefined)
+              if (!formProject && saved && onOpenGuidedSetup) {
+                // Nytt projekt → gå direkt till guidad granskning
+                onOpenGuidedSetup(saved.id, true)
+              } else {
+                // Redigering → stanna på dashboarden
+                loadAll()
+              }
+            }}
             onCancel={() => setFormProject(undefined)}
           />
         </Modal>

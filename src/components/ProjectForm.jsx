@@ -19,9 +19,9 @@ export default function ProjectForm({ project, onSaved, onCancel }) {
 
   function submit(e) {
     e.preventDefault()
-    saveProject(project ? { ...project, ...form } : form)
+    const saved = saveProject(project ? { ...project, ...form } : form)
     toast(project ? 'Projekt uppdaterat' : 'Projekt skapat')
-    onSaved()
+    onSaved(saved)
   }
 
   return (
