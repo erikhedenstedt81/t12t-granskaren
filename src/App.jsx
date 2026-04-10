@@ -98,6 +98,7 @@ export default function App() {
               setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
             }
             onOpenSettings={() => setShowSettings(true)}
+            onOpenGuidedSetup={projectId => setRoute({ view: 'setup', projectId })}
           />
         )}
       </main>

@@ -7,7 +7,7 @@ import GlobalSearch from './GlobalSearch.jsx'
 
 const SEVERITY_ORDER = { critical: 4, high: 3, medium: 2, low: 1 }
 
-export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditByIds, onOpenSettings }) {
+export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditByIds, onOpenSettings, onOpenGuidedSetup }) {
   const [projects,    setProjects]    = useState([])
   const [globalStats, setGlobalStats] = useState({ active: 0, open: 0, critical: 0, fixedRecent: 0 })
   const [formProject, setFormProject] = useState(undefined) // undefined=closed, null=new, obj=edit
@@ -90,6 +90,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
                   project={p}
                   onAudit={e => { e.stopPropagation(); onOpenAudit(p) }}
                   onOverview={e => { e.stopPropagation(); onOpenOverview(p) }}
+                  onGuidedSetup={e => { e.stopPropagation(); onOpenGuidedSetup && onOpenGuidedSetup(p.id) }}
                   onEdit={e => { e.stopPropagation(); setFormProject(p) }}
                   onDelete={e => {
                     e.stopPropagation()
@@ -131,7 +132,7 @@ function StatCard({ label, value, icon, accent, positive }) {
 
 /* ─── ProjectDashCard ──────────────────────────────────────────────────────── */
 
-function ProjectDashCard({ project, onAudit, onOverview, onEdit, onDelete }) {
+function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, onDelete }) {
   const findings = useMemo(() => getFindings(project.id), [project.id])
 
   const counts = useMemo(() => {
@@ -189,11 +190,17 @@ function ProjectDashCard({ project, onAudit, onOverview, onEdit, onDelete }) {
       </div>
 
       <div className="db-card-actions">
-        <button className="btn btn-primary btn-sm" onClick={onAudit}>
-          Fortsätt granska
+        <button className="btn btn-primary btn-sm" onClick={onGuidedSetup}
+          title="Starta en guidad granskning med DIGG-metodik">
+          Guidad granskning
         </button>
-        <button className="btn btn-secondary btn-sm" onClick={onOverview}>
-          Visa rapport
+        <button className="btn btn-secondary btn-sm" onClick={onAudit}
+          title="Öppna fri granskning – dokumentera fynd manuellt">
+          Fri granskning
+        </button>
+        <button className="btn btn-secondary btn-sm" onClick={onOverview}
+          title="Visa projektöversikt, rapport och EAA-status">
+          Projektöversikt
         </button>
         <div className="db-card-links">
           <button className="btn-link" onClick={onEdit}>Redigera</button>
