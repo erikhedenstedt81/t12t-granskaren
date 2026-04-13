@@ -1322,7 +1322,7 @@ textarea:focus-visible {
   justify-content: center;
   height: 100%;
   overflow: hidden;
-  padding: 24px 16px;
+  padding: 40px 32px;
   background: var(--surface-2);
 }
 .as-card {
