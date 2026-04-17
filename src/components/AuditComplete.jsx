@@ -3,6 +3,7 @@ import { getFindings, saveProject } from '../store/storage.js'
 import { wcag22 } from '../data/wcag22.js'
 import { DIGG_EXTRA_CRITERIA } from '../data/diggManual.js'
 import JiraExport from './JiraExport.jsx'
+import AzureExport from './AzureExport.jsx'
 import Icon from './Icon.jsx'
 
 const ALL_CRITERIA = [...wcag22, ...DIGG_EXTRA_CRITERIA]
@@ -15,7 +16,8 @@ export default function AuditComplete({
   onBack,       // → project overview
   onOpenReport, // → customer report
 }) {
-  const [showJira, setShowJira] = useState(false)
+  const [showJira,  setShowJira]  = useState(false)
+  const [showAzure, setShowAzure] = useState(false)
   const [findings, setFindings] = useState([])
 
   useEffect(() => {
@@ -52,9 +54,12 @@ export default function AuditComplete({
   return (
     <div className="ac-root">
 
-      {/* ── Jira-export overlay ── */}
+      {/* ── Export overlays ── */}
       {showJira && (
         <JiraExport project={project} onClose={() => setShowJira(false)} />
+      )}
+      {showAzure && (
+        <AzureExport project={project} onClose={() => setShowAzure(false)} />
       )}
 
       <div className="ac-card" role="main" aria-labelledby="ac-title">
@@ -137,6 +142,9 @@ export default function AuditComplete({
               </button>
               <button className="btn btn-secondary" onClick={() => setShowJira(true)}>
                 Jira-export
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowAzure(true)}>
+                Azure DevOps-export
               </button>
               <button className="btn btn-secondary" onClick={onBack}>
                 Gå till projektöversikt

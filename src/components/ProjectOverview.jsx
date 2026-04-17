@@ -3,6 +3,7 @@ import { getProject, getFindings, getEaaStatus, saveEaaStatus } from '../store/s
 import { wcag22 } from '../data/wcag22.js'
 import { eaaRequirements } from '../data/eaa.js'
 import JiraExport from './JiraExport.jsx'
+import AzureExport from './AzureExport.jsx'
 import Icon from './Icon.jsx'
 
 /* ─── Constants ─────────────────────────────────────────────────────────────── */
@@ -23,6 +24,7 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
   const [tab,           setTab]           = useState('findings')
   const [criterionFilter, setCriterionFilter] = useState(null)
   const [showJira,      setShowJira]      = useState(false)
+  const [showAzure,     setShowAzure]     = useState(false)
 
   function reload() {
     setProject(getProject(projectId))
@@ -138,6 +140,7 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
             onReload={reload}
             onOpenReport={onOpenReport ? () => onOpenReport(projectId) : null}
             onOpenJira={() => setShowJira(true)}
+            onOpenAzure={() => setShowAzure(true)}
           />
         )}
         {tab === 'coverage' && (
@@ -158,13 +161,16 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
       {showJira && project && (
         <JiraExport project={project} onClose={() => setShowJira(false)} />
       )}
+      {showAzure && project && (
+        <AzureExport project={project} onClose={() => setShowAzure(false)} />
+      )}
     </div>
   )
 }
 
 /* ─── Tab 1: Fynd ─────────────────────────────────────────────────────────── */
 
-function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, onReload, onOpenReport, onOpenJira }) {
+function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, onReload, onOpenReport, onOpenJira, onOpenAzure }) {
   const [sortCol, setSortCol]       = useState('severity')
   const [sortDir, setSortDir]       = useState('desc')
   const [groupBy,  setGroupBy]      = useState(false)
@@ -260,6 +266,9 @@ function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, 
           )}
           <button className="btn btn-secondary btn-sm" onClick={onOpenJira} aria-label="Exportera fynd till Jira">
             Jira-export
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={onOpenAzure} aria-label="Exportera fynd till Azure DevOps">
+            Azure DevOps-export
           </button>
         </div>
       </div>

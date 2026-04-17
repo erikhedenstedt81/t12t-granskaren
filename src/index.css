@@ -1468,6 +1468,70 @@ textarea:focus-visible {
   color: var(--text-2);
 }
 
+/* ── Azure DevOps Export modal ────────────────────────── */
+.ae-box {
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.ae-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+@media (max-width: 560px) {
+  .ae-settings { grid-template-columns: 1fr; }
+}
+.ae-prio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.ae-prio-th {
+  text-align: left;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ae-prio-td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ae-prio-table tr:last-child .ae-prio-td { border-bottom: none; }
+.ae-prio-value {
+  font-weight: 600;
+  color: var(--text-2);
+}
+.ae-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+.ae-primary-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ae-instructions {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  margin: 0;
+}
+
 /* ═══════════════════════════════════════════════════════
    AUDIT SETUP (.as-*)
 ═══════════════════════════════════════════════════════ */
