@@ -142,7 +142,7 @@ a { color: inherit; }
   --accent: var(--brand-600);
 
   /* ── Typsnitt ── */
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   /* ── Radier ── */
