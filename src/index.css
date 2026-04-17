@@ -235,7 +235,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); font-size
 .icon-lg { font-size: 24px; }
 .icon-xl { font-size: 32px; }
 
-/* Severity dot colors for circle icon */
+/* Icon color utilities */
+.icon-brand   { color: var(--primary); }
+.icon-success { color: var(--low); }
+.icon-danger  { color: var(--critical); }
+.icon-warning { color: var(--medium); }
+.icon-muted   { color: var(--text-3); }
+.icon-white   { color: #ffffff; }
+/* Severity dot colors */
 .icon-critical { color: var(--critical); }
 .icon-high     { color: var(--high); }
 .icon-medium   { color: var(--medium); }

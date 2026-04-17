@@ -36,7 +36,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       <header className="db-header">
         <div className="db-header-inner">
           <div className="db-logo">
-            <Icon name="accessibility_new" size="lg" className="db-logo-icon" aria-hidden="true" />
+            <Icon name="accessibility_new" size="lg" className="db-logo-icon icon-brand" aria-hidden="true" />
             <div>
               <h1 className="db-title">Tillgänglighetsgranskaren</h1>
               <span className="db-subtitle">WCAG 2.2 · EAA 2025</span>
@@ -62,16 +62,16 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       <div className="db-main">
         {/* ── Global stats ── */}
         <div className="db-stats" role="list" aria-label="Översiktsstatistik">
-          <StatCard role="listitem" label="Aktiva projekt"           value={globalStats.active}      icon="folder" />
-          <StatCard role="listitem" label="Öppna fynd"               value={globalStats.open}        icon="search" />
-          <StatCard role="listitem" label="Kritiska fynd"            value={globalStats.critical}    icon="error" accent />
-          <StatCard role="listitem" label="Åtgärdade (30 dagar)"    value={globalStats.fixedRecent} icon="check_circle" positive />
+          <StatCard role="listitem" label="Aktiva projekt"           value={globalStats.active}      icon="folder"       iconColor="icon-brand"   />
+          <StatCard role="listitem" label="Öppna fynd"               value={globalStats.open}        icon="search"       iconColor="icon-brand"   />
+          <StatCard role="listitem" label="Kritiska fynd"            value={globalStats.critical}    icon="error"        iconColor="icon-danger"  accent />
+          <StatCard role="listitem" label="Åtgärdade (30 dagar)"    value={globalStats.fixedRecent} icon="check_circle" iconColor="icon-success" positive />
         </div>
 
         {/* ── Projects ── */}
         {projects.length === 0 ? (
           <div className="db-empty">
-            <div className="db-empty-icon" aria-hidden="true"><Icon name="assignment" size="xl" /></div>
+            <div className="db-empty-icon" aria-hidden="true"><Icon name="assignment" size="xl" className="icon-muted" /></div>
             <h2>Inga projekt ännu</h2>
             <p>Skapa ett granskningsprojekt för att börja dokumentera tillgänglighetsproblem.</p>
             <button className="btn btn-primary" onClick={() => setFormProject(null)}>
@@ -130,10 +130,10 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
 
 /* ─── StatCard ─────────────────────────────────────────────────────────────── */
 
-function StatCard({ label, value, icon, accent, positive }) {
+function StatCard({ label, value, icon, iconColor = '', accent, positive }) {
   return (
     <div className={`db-stat-card ${accent ? 'db-stat-accent' : positive ? 'db-stat-positive' : ''}`}>
-      <Icon name={icon} size="lg" className="db-stat-icon" aria-hidden="true" />
+      <Icon name={icon} size="lg" className={`db-stat-icon ${iconColor}`} aria-hidden="true" />
       <span className="db-stat-value">{value}</span>
       <span className="db-stat-label">{label}</span>
     </div>

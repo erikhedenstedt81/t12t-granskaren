@@ -20,9 +20,9 @@ import Icon from './Icon.jsx'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_ICON = {
-  passed:  <Icon name="check" size="sm" />,
-  finding: <Icon name="close" size="sm" />,
-  na:      <Icon name="remove" size="sm" />,
+  passed:  <Icon name="check"  size="sm" className="icon-success" />,
+  finding: <Icon name="close" size="sm" className="icon-danger"  />,
+  na:      <Icon name="remove" size="sm" className="icon-muted"  />,
   null:    '',
 }
 const STATUS_LABEL = {
@@ -177,7 +177,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
           onClick={onBack}
           aria-label="Tillbaka till projektöversikt"
         >
-          <Icon name="arrow_back" /> Tillbaka
+          <Icon name="arrow_back" size="sm" className="icon-muted" /> Tillbaka
         </button>
         <div className="ga-topbar-center">
           <span className="ga-topbar-name">{project.name}</span>
@@ -208,7 +208,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
           aria-disabled={!isComplete}
           title={!isComplete ? 'Alla kriterier måste vara granskade' : 'Avsluta granskningen'}
         >
-          <Icon name="check" /> Avsluta granskning
+          <Icon name="check" className="icon-white" /> Avsluta granskning
         </button>
       </header>
 
@@ -392,21 +392,21 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
                     onClick={handleFinding}
                     aria-label="Ja, dokumentera ett fynd för detta kriterium"
                   >
-                    <Icon name="close" /> Ja, dokumentera fynd
+                    <Icon name="close" className="icon-danger" /> Ja, dokumentera fynd
                   </button>
                   <button
                     className="ga-btn-pass"
                     onClick={handlePassed}
                     aria-label="Nej, kriteriet är godkänt"
                   >
-                    <Icon name="check" /> Nej, godkänt
+                    <Icon name="check" className="icon-success" /> Nej, godkänt
                   </button>
                   <button
                     className="ga-btn-na"
                     onClick={handleNa}
                     aria-label="Ej applicerbart för denna sida"
                   >
-                    <Icon name="remove" /> Ej applicerbart för denna sida
+                    <Icon name="remove" className="icon-muted" /> Ej applicerbart för denna sida
                   </button>
                 </div>
               </div>

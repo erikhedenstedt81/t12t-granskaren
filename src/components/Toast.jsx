@@ -41,7 +41,11 @@ export function ToastContainer() {
       {toasts.map(t => (
         <div key={t.id} className={`toast toast-${t.type}`} role="status">
           <span className="toast-icon">
-            {t.type === 'error' ? <Icon name="close" size="sm" /> : t.type === 'info' ? <Icon name="info" size="sm" /> : <Icon name="check" size="sm" />}
+            {t.type === 'error'
+              ? <Icon name="close" size="sm" className="icon-danger" />
+              : t.type === 'info'
+              ? <Icon name="info"  size="sm" className="icon-brand" />
+              : <Icon name="check" size="sm" className="icon-success" />}
           </span>
           <span className="toast-message">{t.message}</span>
           <button
@@ -49,7 +53,7 @@ export function ToastContainer() {
             onClick={() => remove(t.id)}
             aria-label="Stäng notis"
           >
-            <Icon name="close" size="sm" />
+            <Icon name="close" size="sm" className="icon-muted" />
           </button>
         </div>
       ))}

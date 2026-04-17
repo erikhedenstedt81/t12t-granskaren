@@ -189,7 +189,7 @@ export default function AuditSetup({ project, onDone, onCancel }) {
         <div className="as-card-top">
           <div className="as-header">
             <button className="as-back-btn" onClick={goBack} aria-label="Gå tillbaka">
-              <Icon name="arrow_back" /> Tillbaka
+              <Icon name="arrow_back" size="sm" className="icon-muted" /> Tillbaka
             </button>
             <div className="as-header-text">
               <h1 className="as-title">Guidad granskning</h1>
@@ -298,14 +298,14 @@ export default function AuditSetup({ project, onDone, onCancel }) {
                 onClick={() => answer(true)}
                 autoFocus
               >
-                <span className="as-answer-icon" aria-hidden="true"><Icon name="check" /></span>
+                <span className="as-answer-icon" aria-hidden="true"><Icon name="check" size="lg" className="icon-success" /></span>
                 Ja
               </button>
               <button
                 className="as-answer-btn as-no"
                 onClick={() => answer(false)}
               >
-                <span className="as-answer-icon" aria-hidden="true"><Icon name="close" /></span>
+                <span className="as-answer-icon" aria-hidden="true"><Icon name="close" size="lg" className="icon-danger" /></span>
                 Nej
               </button>
             </div>
