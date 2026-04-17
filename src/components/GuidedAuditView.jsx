@@ -180,7 +180,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
           <Icon name="arrow_back" size="sm" className="icon-muted" /> Tillbaka
         </button>
         <div className="ga-topbar-center">
-          <span className="ga-topbar-name">{project.name}</span>
+          <span className="ga-topbar-name">{project.name?.trim() || 'Namnlöst projekt'}</span>
           <span className="ga-topbar-sep" aria-hidden="true">·</span>
           <span className="ga-topbar-mode">Guidad granskning</span>
         </div>

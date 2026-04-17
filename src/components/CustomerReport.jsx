@@ -70,7 +70,7 @@ export default function CustomerReport({ projectId, onBack }) {
             <span className="cr-title">
               {lang === 'en' ? 'Accessibility Report' : 'Tillgänglighetsrapport'}
             </span>
-            <span className="cr-subtitle">{project.clientName} · {project.name}</span>
+            <span className="cr-subtitle">{project.clientName?.trim() || '–'} · {project.name?.trim() || 'Namnlöst projekt'}</span>
           </div>
         </div>
         <div className="cr-toolbar-right">

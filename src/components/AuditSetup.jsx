@@ -193,7 +193,7 @@ export default function AuditSetup({ project, onDone, onCancel }) {
             </button>
             <div className="as-header-text">
               <h1 className="as-title">Guidad granskning</h1>
-              <p className="as-subtitle">{project.name} · {project.clientName}</p>
+              <p className="as-subtitle">{project.name?.trim() || 'Namnlöst projekt'} · {project.clientName?.trim() || '–'}</p>
             </div>
           </div>
 

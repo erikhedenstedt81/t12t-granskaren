@@ -67,11 +67,11 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
           <div className="po-breadcrumb" aria-label="Navigering">
             <button className="po-crumb-link" onClick={onBack}>Dashboard</button>
             <span className="po-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
-            <span className="po-crumb-current">{project.name}</span>
+            <span className="po-crumb-current">{project.name?.trim() || 'Namnlöst projekt'}</span>
           </div>
           <div className="po-header-right">
             <div>
-              <h1 className="po-project-name">{project.name}</h1>
+              <h1 className="po-project-name">{project.name?.trim() || 'Namnlöst projekt'}</h1>
               <p className="po-project-sub">
                 {project.clientName}
                 {project.url && ` · ${project.url}`}

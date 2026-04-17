@@ -30,7 +30,8 @@ export default function App() {
           setup:    'Guidad granskning – uppstart',
           guided:   'Guidad granskning',
         }[route.view] ?? ''
-        title = `${project.clientName} – ${viewLabel} | ${BASE_TITLE}`
+        const displayName = project.name?.trim() || 'Namnlöst projekt'
+        title = `${displayName} – ${viewLabel} | ${BASE_TITLE}`
       }
     }
     document.title = title

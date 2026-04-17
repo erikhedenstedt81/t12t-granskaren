@@ -95,7 +95,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
                   onEdit={e => { e.stopPropagation(); setFormProject(p) }}
                   onDelete={e => {
                     e.stopPropagation()
-                    if (confirm(`Ta bort "${p.name}" och alla dess fynd?`)) {
+                    if (confirm(`Ta bort "${p.name?.trim() || 'Namnlöst projekt'}" och alla dess fynd?`)) {
                       deleteProject(p.id); loadAll()
                     }
                   }}
@@ -167,10 +167,10 @@ function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, 
   const openCount = findings.filter(f => f.status === 'open' || f.status === 'in-progress').length
 
   return (
-    <article className="db-project-card" aria-label={project.name}>
+    <article className="db-project-card" aria-label={project.name?.trim() || 'Namnlöst projekt'}>
       <div className="db-card-top">
         <div className="db-card-info">
-          <h3 className="db-card-name">{project.name}</h3>
+          <h3 className="db-card-name">{project.name?.trim() || 'Namnlöst projekt'}</h3>
           <p className="db-card-client">{project.clientName}</p>
           {project.url && (
             <a

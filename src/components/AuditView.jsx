@@ -136,10 +136,10 @@ export default function AuditView({ projectId, initialFindingId, onBack, onOpenO
           <span className="av-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
           {onOpenOverview ? (
             <button className="av-crumb-link" onClick={() => onOpenOverview(projectId)}>
-              {project.name}
+              {project.name?.trim() || 'Namnlöst projekt'}
             </button>
           ) : (
-            <span className="av-crumb-text">{project.name}</span>
+            <span className="av-crumb-text">{project.name?.trim() || 'Namnlöst projekt'}</span>
           )}
           <span className="av-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
           <span className="av-crumb-current">Granskning</span>
@@ -147,7 +147,7 @@ export default function AuditView({ projectId, initialFindingId, onBack, onOpenO
 
         <div className="av-header-row2">
           <div className="av-header-info">
-            <div className="av-project-name">{project.name}</div>
+            <div className="av-project-name">{project.name?.trim() || 'Namnlöst projekt'}</div>
             <div className="av-project-sub">
               {project.clientName}
               {project.url && ` · ${project.url}`}
