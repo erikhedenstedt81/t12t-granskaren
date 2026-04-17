@@ -133,9 +133,11 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
 function StatCard({ label, value, icon, iconColor = '', accent, positive }) {
   return (
     <div className={`db-stat-card ${accent ? 'db-stat-accent' : positive ? 'db-stat-positive' : ''}`}>
-      <Icon name={icon} size="lg" className={`db-stat-icon ${iconColor}`} aria-hidden="true" />
-      <span className="db-stat-value">{value}</span>
-      <span className="db-stat-label">{label}</span>
+      <div className="db-stat-text">
+        <span className="db-stat-value">{value}</span>
+        <span className="db-stat-label">{label}</span>
+      </div>
+      <Icon name={icon} size="xl" className={`db-stat-icon ${iconColor}`} aria-hidden="true" />
     </div>
   )
 }

@@ -844,11 +844,13 @@ kbd { font-family: var(--font-mono); font-size: 10px; background: var(--bg); bor
 
 .db-stat-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
-  padding: 18px 20px; display: flex; flex-direction: column; gap: 6px;
+  padding: 20px 24px; display: flex; flex-direction: row; align-items: center;
+  justify-content: space-between; gap: 16px;
 }
 .db-stat-accent   { border-left: 3px solid var(--critical); }
 .db-stat-positive { border-left: 3px solid var(--low); }
-.db-stat-icon  { font-size: 20px; }
+.db-stat-text  { display: flex; flex-direction: column; gap: 6px; }
+.db-stat-icon  { opacity: 0.5; flex-shrink: 0; }
 .db-stat-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
 .db-stat-label { font-size: 12px; color: var(--text-2); }
 .db-stat-accent .db-stat-value   { color: var(--critical); }
