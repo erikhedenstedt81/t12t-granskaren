@@ -5,8 +5,6 @@ import { DIGG_EXTRA_CRITERIA } from '../data/diggManual.js'
 import { toast } from './Toast.jsx'
 
 // ─── Question definitions ─────────────────────────────────────────────────────
-// notApplicableIf: false  → criteria are N/A when the answer is "Nej"
-// followUp: string        → extra sub-question shown after "Ja" on the main question
 
 const QUESTIONS = [
   {
@@ -116,41 +114,27 @@ const QUESTIONS = [
   },
 ]
 
-// ─── Derives notApplicable list from answers ──────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function deriveNotApplicable(answers) {
   const naSet = new Set()
   for (const q of QUESTIONS) {
-    if (q.isFollowUp) continue // follow-ups don't add N/A by themselves
+    if (q.isFollowUp) continue
     if (answers[q.id] === false) {
-      for (const id of q.affects) {
-        naSet.add(id)
-      }
+      for (const id of q.affects) naSet.add(id)
     }
   }
   return [...naSet]
 }
 
-// ─── All criterion ids for lookup ─────────────────────────────────────────────
-
 const ALL_CRITERIA = [...wcag22, ...DIGG_EXTRA_CRITERIA]
-
-function getCriterion(id) {
-  return ALL_CRITERIA.find(c => c.id === id) ?? null
-}
-
-// ─── Wizard step machine ──────────────────────────────────────────────────────
-// Returns the ordered list of question ids to show, skipping follow-ups
-// if their parent was answered "Nej".
+function getCriterion(id) { return ALL_CRITERIA.find(c => c.id === id) ?? null }
 
 function getVisibleQuestions(answers) {
   const visible = []
   for (const q of QUESTIONS) {
     if (q.isFollowUp) {
-      // Only show follow-up if parent was answered "Ja"
-      if (answers[q.parentId] === true) {
-        visible.push(q)
-      }
+      if (answers[q.parentId] === true) visible.push(q)
     } else {
       visible.push(q)
     }
@@ -162,7 +146,7 @@ function getVisibleQuestions(answers) {
 
 export default function AuditSetup({ project, onDone, onCancel }) {
   const [answers, setAnswers] = useState({})
-  const [step,    setStep]    = useState(0) // index into visibleQuestions
+  const [step,    setStep]    = useState(0)
 
   const visibleQuestions = getVisibleQuestions(answers)
   const total            = visibleQuestions.length
@@ -172,12 +156,7 @@ export default function AuditSetup({ project, onDone, onCancel }) {
 
   function answer(value) {
     const q = visibleQuestions[step]
-    const newAnswers = { ...answers, [q.id]: value }
-    setAnswers(newAnswers)
-
-    // Re-compute visible list with new answers, then advance
-    const nextVisible = getVisibleQuestions(newAnswers)
-    // step + 1 might now be a follow-up or a normal question
+    setAnswers(prev => ({ ...prev, [q.id]: value }))
     setStep(s => s + 1)
   }
 
@@ -190,11 +169,7 @@ export default function AuditSetup({ project, onDone, onCancel }) {
     const notApplicable = deriveNotApplicable(answers)
     const updated = saveProject({
       ...project,
-      auditContext: {
-        answers,
-        notApplicable,
-        setupAt: new Date().toISOString(),
-      },
+      auditContext: { answers, notApplicable, setupAt: new Date().toISOString() },
     })
     toast('Granskningskontext sparad')
     onDone(updated)
@@ -209,45 +184,113 @@ export default function AuditSetup({ project, onDone, onCancel }) {
     <div className="as-root">
       <div className="as-card">
 
-        {/* ── Header ── */}
-        <div className="as-header">
-          <button className="as-back-btn" onClick={goBack} aria-label="Gå tillbaka">
-            ← Tillbaka
-          </button>
-          <div className="as-header-text">
-            <h1 className="as-title">Guidad granskning</h1>
-            <p className="as-subtitle">{project.name} · {project.clientName}</p>
+        {/* ── Fixed top: header + progress bar ── */}
+        <div className="as-card-top">
+          <div className="as-header">
+            <button className="as-back-btn" onClick={goBack} aria-label="Gå tillbaka">
+              ← Tillbaka
+            </button>
+            <div className="as-header-text">
+              <h1 className="as-title">Guidad granskning</h1>
+              <p className="as-subtitle">{project.name} · {project.clientName}</p>
+            </div>
           </div>
-        </div>
 
-        {/* ── Progress bar ── */}
-        {!isSummary && (
-          <div className="as-progress-wrap">
+          {!isSummary && (
             <div
-              className="as-progress-bar"
+              className="as-progress-wrap"
               role="progressbar"
               aria-valuenow={progress}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label={`Fråga ${step + 1} av ${total}`}
             >
-              <div className="as-progress-fill" style={{ width: `${progress}%` }} />
+              <div className="as-progress-bar">
+                <div className="as-progress-fill" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="as-progress-label" aria-hidden="true">{step + 1} / {total}</span>
             </div>
-            <span className="as-progress-label" aria-hidden="true">{step + 1} / {total}</span>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* ── Question ── */}
-        {!isSummary && currentQ && (
-          <div className="as-question-area" key={`q-${step}`}>
-            {currentQ.isFollowUp && (
-              <p className="as-followup-badge">Följdfråga</p>
-            )}
-            <p className="as-step-label" aria-hidden="true">Fråga {step + 1} av {total}</p>
-            <h2 className="as-question" id="as-question-label">{currentQ.question}</h2>
-            {currentQ.hint && (
-              <p className="as-hint">{currentQ.hint}</p>
-            )}
+        {/* ── Scrollable body ── */}
+        <div className="as-body">
+
+          {/* Question step */}
+          {!isSummary && currentQ && (
+            <div className="as-question-area" key={`q-${step}`}>
+              {currentQ.isFollowUp && (
+                <p className="as-followup-badge">Följdfråga</p>
+              )}
+              <p className="as-step-label" aria-hidden="true">Fråga {step + 1} av {total}</p>
+              <h2 className="as-question" id="as-question-label">{currentQ.question}</h2>
+              {currentQ.hint && (
+                <p className="as-hint">{currentQ.hint}</p>
+              )}
+            </div>
+          )}
+
+          {/* Summary */}
+          {isSummary && (
+            <div className="as-summary">
+              <h2 className="as-summary-title">Granskningsmål</h2>
+              <p className="as-summary-desc">
+                Baserat på dina svar är{' '}
+                <strong>{applicable.length} av {wcag22.length} WCAG-kriterier</strong>{' '}
+                applicerbara på tjänsten.
+                {notApplicable.length > 0 && (
+                  <> {notApplicable.length} kriterier markeras automatiskt som N/A.</>
+                )}
+              </p>
+
+              <div className="as-summary-cols">
+                <div className="as-summary-col">
+                  <h3 className="as-col-title as-col-yes">
+                    Applicerbara <span className="as-col-count">{applicable.length}</span>
+                  </h3>
+                  <ul className="as-crit-list">
+                    {applicable.map(c => (
+                      <li key={c.id} className="as-crit-item">
+                        <span className="as-crit-id">{c.id}</span>
+                        <span className="as-crit-name">{c.nameSwedish}</span>
+                        <span className={`badge badge-level-${c.level.toLowerCase()}`}>{c.level}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {notApplicable.length > 0 && (
+                  <div className="as-summary-col">
+                    <h3 className="as-col-title as-col-no">
+                      Ej applicerbara <span className="as-col-count">{notApplicable.length}</span>
+                    </h3>
+                    <ul className="as-crit-list">
+                      {notApplicable.map(id => {
+                        const c = getCriterion(id)
+                        if (!c) return null
+                        const q = QUESTIONS.find(q => q.affects.includes(id))
+                        const reason = q
+                          ? `Markeras som N/A – ${q.question.toLowerCase().replace('förekommer ', '').replace('?', '')} förekommer ej`
+                          : ''
+                        return (
+                          <li key={id} className="as-crit-item as-crit-na" title={reason}>
+                            <span className="as-crit-id">{c.id}</span>
+                            <span className="as-crit-name">{c.nameSwedish}</span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Sticky footer: action buttons ── */}
+        <div className="as-footer">
+          {!isSummary ? (
+            /* Ja / Nej buttons */
             <div className="as-answers" role="group" aria-labelledby="as-question-label">
               <button
                 className="as-answer-btn as-yes"
@@ -265,69 +308,8 @@ export default function AuditSetup({ project, onDone, onCancel }) {
                 Nej
               </button>
             </div>
-          </div>
-        )}
-
-        {/* ── Summary ── */}
-        {isSummary && (
-          <div className="as-summary">
-            <h2 className="as-summary-title">Granskningsmål</h2>
-            <p className="as-summary-desc">
-              Baserat på dina svar är{' '}
-              <strong>{applicable.length} av {wcag22.length} WCAG-kriterier</strong>{' '}
-              applicerbara på tjänsten.
-              {notApplicable.length > 0 && (
-                <> {notApplicable.length} kriterier markeras automatiskt som N/A.</>
-              )}
-            </p>
-
-            <div className="as-summary-cols">
-              {/* Applicable */}
-              <div className="as-summary-col">
-                <h3 className="as-col-title as-col-yes">
-                  Applicerbara <span className="as-col-count">{applicable.length}</span>
-                </h3>
-                <ul className="as-crit-list">
-                  {applicable.slice(0, 18).map(c => (
-                    <li key={c.id} className="as-crit-item">
-                      <span className="as-crit-id">{c.id}</span>
-                      <span className="as-crit-name">{c.nameSwedish}</span>
-                      <span className={`badge badge-level-${c.level.toLowerCase()}`}>{c.level}</span>
-                    </li>
-                  ))}
-                  {applicable.length > 18 && (
-                    <li className="as-crit-more">…och {applicable.length - 18} till</li>
-                  )}
-                </ul>
-              </div>
-
-              {/* Not applicable */}
-              {notApplicable.length > 0 && (
-                <div className="as-summary-col">
-                  <h3 className="as-col-title as-col-no">
-                    Ej applicerbara <span className="as-col-count">{notApplicable.length}</span>
-                  </h3>
-                  <ul className="as-crit-list">
-                    {notApplicable.map(id => {
-                      const c = getCriterion(id)
-                      if (!c) return null
-                      const reason = (() => {
-                        const q = QUESTIONS.find(q => q.affects.includes(id))
-                        if (!q) return ''
-                        return `Markeras som N/A – ${q.question.toLowerCase().replace('förekommer ', '').replace('?', '')} förekommer ej`
-                      })()
-                      return (
-                        <li key={id} className="as-crit-item as-crit-na" title={reason}>
-                          <span className="as-crit-id">{c.id}</span>
-                          <span className="as-crit-name">{c.nameSwedish}</span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              )}
-            </div>
-
+          ) : (
+            /* Summary navigation */
             <div className="as-summary-actions">
               <button className="btn btn-secondary" onClick={goBack}>
                 ← Ändra svar
@@ -336,8 +318,8 @@ export default function AuditSetup({ project, onDone, onCancel }) {
                 Starta granskning med dessa inställningar →
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
       </div>
     </div>
