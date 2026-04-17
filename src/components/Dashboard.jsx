@@ -60,10 +60,14 @@ export default function Dashboard({ onOpenOverview, onOpenAuditByIds, onOpenSett
       <div className="db-main">
         {/* ── Global stats ── */}
         <div className="db-stats" role="list" aria-label="Översiktsstatistik">
-          <StatCard role="listitem" label="Aktiva projekt"        value={globalStats.active}      icon="folder"       iconColor="icon-brand"   />
-          <StatCard role="listitem" label="Öppna fynd"            value={globalStats.open}        icon="search"       iconColor="icon-brand"   />
-          <StatCard role="listitem" label="Kritiska fynd"         value={globalStats.critical}    icon="error"        iconColor="icon-danger"  accent />
-          <StatCard role="listitem" label="Åtgärdade (30 dagar)" value={globalStats.fixedRecent} icon="check_circle" iconColor="icon-success" positive />
+          <StatCard label="Aktiva projekt"        value={globalStats.active}      icon="folder"       iconColor="icon-brand"
+            ariaLabel={`${globalStats.active} aktiva projekt`} />
+          <StatCard label="Öppna fynd"            value={globalStats.open}        icon="search"       iconColor="icon-brand"
+            ariaLabel={`${globalStats.open} öppna fynd`} />
+          <StatCard label="Kritiska fynd"         value={globalStats.critical}    icon="error"        iconColor="icon-danger"  accent
+            ariaLabel={`${globalStats.critical} kritiska fynd kräver åtgärd`} />
+          <StatCard label="Åtgärdade (30 dagar)" value={globalStats.fixedRecent} icon="check_circle" iconColor="icon-success" positive
+            ariaLabel={`${globalStats.fixedRecent} fynd åtgärdade de senaste 30 dagarna`} />
         </div>
 
         {/* ── Projects ── */}
@@ -126,9 +130,13 @@ export default function Dashboard({ onOpenOverview, onOpenAuditByIds, onOpenSett
 
 /* ─── StatCard ─────────────────────────────────────────────────────────────── */
 
-function StatCard({ label, value, icon, iconColor = '', accent, positive }) {
+function StatCard({ label, value, icon, iconColor = '', accent, positive, ariaLabel }) {
   return (
-    <div className={`db-stat-card ${accent ? 'db-stat-accent' : positive ? 'db-stat-positive' : ''}`}>
+    <div
+      className={`db-stat-card ${accent ? 'db-stat-accent' : positive ? 'db-stat-positive' : ''}`}
+      role="listitem"
+      aria-label={ariaLabel}
+    >
       <div className="db-stat-text">
         <span className="db-stat-value">{value}</span>
         <span className="db-stat-label">{label}</span>
@@ -234,7 +242,7 @@ function ProgressRing({ percent, reviewed }) {
       className="progress-ring"
       role="img"
       aria-label={`${percent}% av WCAG-kriterier granskade (${reviewed} av ${wcag22.length})`}
-      title={`${reviewed}/${wcag22.length} kriterier täckta`}
+      title={`${percent}% av WCAG-kriterier granskade (${reviewed} av ${wcag22.length})`}
     >
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
         <circle
@@ -252,7 +260,7 @@ function ProgressRing({ percent, reviewed }) {
       </svg>
       <div className="progress-ring-label">
         <span className="progress-ring-pct">{percent}%</span>
-        <span className="progress-ring-sub">täckt</span>
+        <span className="progress-ring-sub">granskat</span>
       </div>
     </div>
   )

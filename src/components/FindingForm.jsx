@@ -73,8 +73,9 @@ function isStepDone(step, form) {
 /* ─── Main component ─────────────────────────────────────────────────────────── */
 
 export default function FindingForm({ project, finding, onSaved, onNew, onCancel }) {
-  const [step, setStep] = useState(1)
-  const [form, setForm] = useState(() => initForm(finding, project))
+  const [step,       setStep]       = useState(1)
+  const [form,       setForm]       = useState(() => initForm(finding, project))
+  const [fixIsAuto,  setFixIsAuto]  = useState(false)
   const set = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), [])
 
   // When criterion changes: auto-fill suggestedFix + recalc severity
@@ -82,11 +83,15 @@ export default function FindingForm({ project, finding, onSaved, onNew, onCancel
     if (!form.useEaa && form.wcagCriterionId && form.severityAuto) {
       const c = wcag22.find(cr => cr.id === form.wcagCriterionId)
       if (c) {
-        setForm(f => ({
-          ...f,
-          suggestedFix: f.suggestedFix || c.suggestedFix,
-          severity: calculateSeverity(c, { isKeyFlow: f.isKeyFlow }),
-        }))
+        setForm(f => {
+          const shouldAutoFill = !f.suggestedFix && c.suggestedFix
+          if (shouldAutoFill) setFixIsAuto(true)
+          return {
+            ...f,
+            suggestedFix: f.suggestedFix || c.suggestedFix,
+            severity: calculateSeverity(c, { isKeyFlow: f.isKeyFlow }),
+          }
+        })
       }
     }
   }, [form.wcagCriterionId])
@@ -210,7 +215,10 @@ export default function FindingForm({ project, finding, onSaved, onNew, onCancel
               <Step2 form={form} set={set} selectedCriterion={selectedCriterion} />
             )}
             {step === 3 && (
-              <Step3 form={form} set={set} setForm={setForm} toggleAffected={toggleAffected} />
+              <Step3
+                form={form} set={set} setForm={setForm} toggleAffected={toggleAffected}
+                fixIsAuto={fixIsAuto} onFixEdit={() => setFixIsAuto(false)}
+              />
             )}
             {step === 4 && (
               <Step4
@@ -360,7 +368,7 @@ function Step2({ form, set, selectedCriterion }) {
 
 /* ─── Step 3: Fyndet ─────────────────────────────────────────────────────────── */
 
-function Step3({ form, set, setForm, toggleAffected }) {
+function Step3({ form, set, setForm, toggleAffected, fixIsAuto, onFixEdit }) {
   return (
     <div className="ff-section">
       <h2 className="ff-section-title">Steg 3 – Fyndet</h2>
@@ -408,14 +416,22 @@ function Step3({ form, set, setForm, toggleAffected }) {
 
       <div className="field">
         <label className="field-label" htmlFor="ff-fix">Föreslagen åtgärd</label>
+        {fixIsAuto && (
+          <span className="ff-auto-badge" aria-label="Automatiskt förslag baserat på WCAG-kriteriet – granska och anpassa texten">
+            ✦ Automatiskt förslag – granska och anpassa
+          </span>
+        )}
         <span className="field-hint">Teknisk åtgärd för utvecklare. Förfylls automatiskt om WCAG-kriterium valts.</span>
         <textarea
           id="ff-fix"
-          className="input"
+          className={`input${fixIsAuto ? ' ff-fix-auto' : ''}`}
           rows={3}
           value={form.suggestedFix}
-          onChange={e => set('suggestedFix', e.target.value)}
-          placeholder="Hur bör problemet åtgärdas tekniskt?"
+          onChange={e => {
+            set('suggestedFix', e.target.value)
+            if (fixIsAuto) onFixEdit()
+          }}
+          placeholder="Beskriv den specifika åtgärden för detta fynd"
         />
       </div>
 
