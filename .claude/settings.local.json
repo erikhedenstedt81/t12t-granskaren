@@ -9,7 +9,12 @@
       "Bash(printf 'y\\\\n')",
       "Bash(npx --yes create-vite@latest \"/Users/erikhedenstedt/Documents/A11Y material/A11Y_granskare\" --template react)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Read(//Users/erikhedenstedt/Documents/Diverseprojekt/**)",
+      "Bash(npx create-expo-app@latest Fitcheck --template blank-typescript)",
+      "Bash(npx expo:*)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/expo-camera/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/expo-device/package.json'\\).version\\)\")"
     ]
   }
 }

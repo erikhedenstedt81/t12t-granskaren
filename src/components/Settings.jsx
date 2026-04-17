@@ -6,6 +6,7 @@ import {
 } from '../store/storage.js'
 import { toast } from './Toast.jsx'
 import { useFocusTrap } from '../hooks/useFocusTrap.js'
+import Icon from './Icon.jsx'
 
 export default function Settings({ onClose }) {
   const [profile,  setProfile]  = useState(getAuditorProfile)
@@ -74,7 +75,7 @@ export default function Settings({ onClose }) {
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
       <div ref={dialogRef} className="modal-box st-box" role="dialog" aria-modal="true" aria-label="Inställningar" onKeyDown={trapKeyDown}>
-        <button className="modal-close" onClick={onClose} aria-label="Stäng">×</button>
+        <button className="modal-close" onClick={onClose} aria-label="Stäng"><Icon name="close" /></button>
         <h2 className="pf-title">Inställningar</h2>
 
         {/* ── Auditor profile ── */}
@@ -155,7 +156,7 @@ export default function Settings({ onClose }) {
                 <p className="st-data-desc">Ladda ned alla projekt och fynd som JSON.</p>
               </div>
               <button className="btn btn-secondary btn-sm" onClick={handleExport}>
-                ↓ Exportera JSON
+                <Icon name="download" /> Exportera JSON
               </button>
             </div>
 
@@ -165,7 +166,7 @@ export default function Settings({ onClose }) {
                 <p className="st-data-desc">Återställ data från en tidigare exporterad JSON-fil.</p>
               </div>
               <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }}>
-                ↑ Importera JSON
+                <Icon name="upload" /> Importera JSON
                 <input
                   ref={importRef}
                   type="file"

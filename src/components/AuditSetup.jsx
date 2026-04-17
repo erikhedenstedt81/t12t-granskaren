@@ -3,6 +3,7 @@ import { saveProject } from '../store/storage.js'
 import { wcag22 } from '../data/wcag22.js'
 import { DIGG_EXTRA_CRITERIA } from '../data/diggManual.js'
 import { toast } from './Toast.jsx'
+import Icon from './Icon.jsx'
 
 // ─── Question definitions ─────────────────────────────────────────────────────
 
@@ -188,7 +189,7 @@ export default function AuditSetup({ project, onDone, onCancel }) {
         <div className="as-card-top">
           <div className="as-header">
             <button className="as-back-btn" onClick={goBack} aria-label="Gå tillbaka">
-              ← Tillbaka
+              <Icon name="arrow_back" /> Tillbaka
             </button>
             <div className="as-header-text">
               <h1 className="as-title">Guidad granskning</h1>
@@ -297,14 +298,14 @@ export default function AuditSetup({ project, onDone, onCancel }) {
                 onClick={() => answer(true)}
                 autoFocus
               >
-                <span className="as-answer-icon" aria-hidden="true">✓</span>
+                <span className="as-answer-icon" aria-hidden="true"><Icon name="check" /></span>
                 Ja
               </button>
               <button
                 className="as-answer-btn as-no"
                 onClick={() => answer(false)}
               >
-                <span className="as-answer-icon" aria-hidden="true">✕</span>
+                <span className="as-answer-icon" aria-hidden="true"><Icon name="close" /></span>
                 Nej
               </button>
             </div>
@@ -312,10 +313,10 @@ export default function AuditSetup({ project, onDone, onCancel }) {
             /* Summary navigation */
             <div className="as-summary-actions">
               <button className="btn btn-secondary" onClick={goBack}>
-                ← Ändra svar
+                <Icon name="arrow_back" /> Ändra svar
               </button>
               <button className="btn btn-primary" onClick={handleStart}>
-                Starta granskning med dessa inställningar →
+                Starta granskning med dessa inställningar <Icon name="arrow_forward" />
               </button>
             </div>
           )}

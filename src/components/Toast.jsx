@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import Icon from './Icon.jsx'
 
 // ─── Toast utility ────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ export function ToastContainer() {
       {toasts.map(t => (
         <div key={t.id} className={`toast toast-${t.type}`} role="status">
           <span className="toast-icon">
-            {t.type === 'error' ? '✕' : t.type === 'info' ? 'ℹ' : '✓'}
+            {t.type === 'error' ? <Icon name="close" size="sm" /> : t.type === 'info' ? <Icon name="info" size="sm" /> : <Icon name="check" size="sm" />}
           </span>
           <span className="toast-message">{t.message}</span>
           <button
@@ -48,7 +49,7 @@ export function ToastContainer() {
             onClick={() => remove(t.id)}
             aria-label="Stäng notis"
           >
-            ×
+            <Icon name="close" size="sm" />
           </button>
         </div>
       ))}

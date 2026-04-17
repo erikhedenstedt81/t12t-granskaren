@@ -15,13 +15,14 @@ import {
 import FindingForm from './FindingForm.jsx'
 import AuditComplete from './AuditComplete.jsx'
 import { toast } from './Toast.jsx'
+import Icon from './Icon.jsx'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_ICON = {
-  passed:  '✓',
-  finding: '✗',
-  na:      '–',
+  passed:  <Icon name="check" size="sm" />,
+  finding: <Icon name="close" size="sm" />,
+  na:      <Icon name="remove" size="sm" />,
   null:    '',
 }
 const STATUS_LABEL = {
@@ -176,7 +177,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
           onClick={onBack}
           aria-label="Tillbaka till projektöversikt"
         >
-          ← Tillbaka
+          <Icon name="arrow_back" /> Tillbaka
         </button>
         <div className="ga-topbar-center">
           <span className="ga-topbar-name">{project.name}</span>
@@ -207,7 +208,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
           aria-disabled={!isComplete}
           title={!isComplete ? 'Alla kriterier måste vara granskade' : 'Avsluta granskningen'}
         >
-          ✓ Avsluta granskning
+          <Icon name="check" /> Avsluta granskning
         </button>
       </header>
 
@@ -391,21 +392,21 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
                     onClick={handleFinding}
                     aria-label="Ja, dokumentera ett fynd för detta kriterium"
                   >
-                    ✗ Ja, dokumentera fynd
+                    <Icon name="close" /> Ja, dokumentera fynd
                   </button>
                   <button
                     className="ga-btn-pass"
                     onClick={handlePassed}
                     aria-label="Nej, kriteriet är godkänt"
                   >
-                    ✓ Nej, godkänt
+                    <Icon name="check" /> Nej, godkänt
                   </button>
                   <button
                     className="ga-btn-na"
                     onClick={handleNa}
                     aria-label="Ej applicerbart för denna sida"
                   >
-                    – Ej applicerbart för denna sida
+                    <Icon name="remove" /> Ej applicerbart för denna sida
                   </button>
                 </div>
               </div>
@@ -418,7 +419,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
                   disabled={currentIdx <= 0}
                   aria-label="Föregående kriterium"
                 >
-                  ← Föregående
+                  <Icon name="arrow_back" /> Föregående
                 </button>
                 <button
                   className="btn btn-secondary btn-sm"
@@ -426,7 +427,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
                   disabled={currentIdx >= totalCount - 1}
                   aria-label="Nästa kriterium"
                 >
-                  Nästa →
+                  Nästa <Icon name="arrow_forward" />
                 </button>
               </div>
 

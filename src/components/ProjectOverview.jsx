@@ -3,6 +3,7 @@ import { getProject, getFindings, getEaaStatus, saveEaaStatus } from '../store/s
 import { wcag22 } from '../data/wcag22.js'
 import { eaaRequirements } from '../data/eaa.js'
 import JiraExport from './JiraExport.jsx'
+import Icon from './Icon.jsx'
 
 /* ─── Constants ─────────────────────────────────────────────────────────────── */
 
@@ -63,7 +64,7 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
         <div className="po-header-inner">
           <div className="po-breadcrumb" aria-label="Navigering">
             <button className="po-crumb-link" onClick={onBack}>Dashboard</button>
-            <span className="po-crumb-sep" aria-hidden="true">›</span>
+            <span className="po-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
             <span className="po-crumb-current">{project.name}</span>
           </div>
           <div className="po-header-right">
@@ -204,7 +205,7 @@ function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, 
         <button className="ft-sort-btn" onClick={() => toggleSort(col)}>
           {label}
           <span className="ft-sort-icon" aria-hidden="true">
-            {active ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ' ↕'}
+            {active ? (sortDir === 'desc' ? <Icon name="arrow_downward" size="sm" /> : <Icon name="arrow_upward" size="sm" />) : <Icon name="unfold_more" size="sm" />}
           </span>
         </button>
       </th>
@@ -238,7 +239,7 @@ function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, 
             <div className="ft-filter-notice">
               Filtrerat på kriterium {criterionFilter}
               <button className="btn-link" onClick={onClearFilter} style={{ marginLeft: 8 }}>
-                Rensa filter ×
+                Rensa filter <Icon name="close" size="sm" />
               </button>
             </div>
           )}
@@ -254,7 +255,7 @@ function FindingsTab({ findings, criterionFilter, onClearFilter, onOpenFinding, 
           </label>
           {onOpenReport && (
             <button className="btn btn-primary btn-sm" onClick={onOpenReport}>
-              📄 Generera rapport
+              <Icon name="description" /> Generera rapport
             </button>
           )}
           <button className="btn btn-secondary btn-sm" onClick={onOpenJira} aria-label="Exportera fynd till Jira">
@@ -427,9 +428,9 @@ function CoverageTab({ findings, onCriterionClick }) {
                         >
                           <span className="cov-tile-id">{c.id}</span>
                           <span className="cov-tile-indicator" aria-hidden="true">
-                            {state === 'ok'   ? '✓' :
+                            {state === 'ok'   ? <Icon name="check" size="sm" /> :
                              state === 'warn' ? openCount :
-                             '○'}
+                             <Icon name="radio_button_unchecked" size="sm" />}
                           </span>
                           {c.eaaCritical && (
                             <span className="cov-tile-eaa" aria-label="EAA-kritiskt" title="EAA-kritiskt">E</span>
@@ -490,7 +491,7 @@ function EaaTab({ projectId, findings, openLevelACount }) {
 
         {openLevelACount > 0 && (
           <div className="eaa-warning" role="alert">
-            <span className="eaa-warning-icon" aria-hidden="true">⚠️</span>
+            <span className="eaa-warning-icon" aria-hidden="true"><Icon name="warning" /></span>
             <div>
               <strong>OBS: {openLevelACount} nivå A-kriterier har öppna fynd</strong>
               <p>Detta påverkar EAA-efterlevnad direkt. Kriterierna på nivå A är obligatoriska för alla webbplatser inom EAA:s tillämpningsområde.</p>

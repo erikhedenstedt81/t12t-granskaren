@@ -4,6 +4,7 @@ import { wcag22 } from '../data/wcag22.js'
 import ProjectForm from './ProjectForm.jsx'
 import { Modal } from './ProjectList.jsx'
 import GlobalSearch from './GlobalSearch.jsx'
+import Icon from './Icon.jsx'
 
 const SEVERITY_ORDER = { critical: 4, high: 3, medium: 2, low: 1 }
 
@@ -35,7 +36,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       <header className="db-header">
         <div className="db-header-inner">
           <div className="db-logo">
-            <span aria-hidden="true" className="db-logo-icon">♿</span>
+            <Icon name="accessibility_new" size="lg" className="db-logo-icon" aria-hidden="true" />
             <div>
               <h1 className="db-title">Tillgänglighetsgranskaren</h1>
               <span className="db-subtitle">WCAG 2.2 · EAA 2025</span>
@@ -49,7 +50,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
               aria-label="Inställningar"
               title="Inställningar"
             >
-              ⚙
+              <Icon name="settings" />
             </button>
             <button className="btn btn-primary" onClick={() => setFormProject(null)}>
               + Nytt projekt
@@ -61,16 +62,16 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       <div className="db-main">
         {/* ── Global stats ── */}
         <div className="db-stats" role="list" aria-label="Översiktsstatistik">
-          <StatCard role="listitem" label="Aktiva projekt"           value={globalStats.active}      icon="📁" />
-          <StatCard role="listitem" label="Öppna fynd"               value={globalStats.open}        icon="🔍" />
-          <StatCard role="listitem" label="Kritiska fynd"            value={globalStats.critical}    icon="🚨" accent />
-          <StatCard role="listitem" label="Åtgärdade (30 dagar)"    value={globalStats.fixedRecent} icon="✅" positive />
+          <StatCard role="listitem" label="Aktiva projekt"           value={globalStats.active}      icon="folder" />
+          <StatCard role="listitem" label="Öppna fynd"               value={globalStats.open}        icon="search" />
+          <StatCard role="listitem" label="Kritiska fynd"            value={globalStats.critical}    icon="error" accent />
+          <StatCard role="listitem" label="Åtgärdade (30 dagar)"    value={globalStats.fixedRecent} icon="check_circle" positive />
         </div>
 
         {/* ── Projects ── */}
         {projects.length === 0 ? (
           <div className="db-empty">
-            <div className="db-empty-icon" aria-hidden="true">📋</div>
+            <div className="db-empty-icon" aria-hidden="true"><Icon name="assignment" size="xl" /></div>
             <h2>Inga projekt ännu</h2>
             <p>Skapa ett granskningsprojekt för att börja dokumentera tillgänglighetsproblem.</p>
             <button className="btn btn-primary" onClick={() => setFormProject(null)}>
@@ -132,7 +133,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
 function StatCard({ label, value, icon, accent, positive }) {
   return (
     <div className={`db-stat-card ${accent ? 'db-stat-accent' : positive ? 'db-stat-positive' : ''}`}>
-      <span className="db-stat-icon" aria-hidden="true">{icon}</span>
+      <Icon name={icon} size="lg" className="db-stat-icon" aria-hidden="true" />
       <span className="db-stat-value">{value}</span>
       <span className="db-stat-label">{label}</span>
     </div>

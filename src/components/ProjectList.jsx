@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getProjects, deleteProject, getFindings } from '../store/storage.js'
 import ProjectForm from './ProjectForm.jsx'
 import { useFocusTrap } from '../hooks/useFocusTrap.js'
+import Icon from './Icon.jsx'
 
 export default function ProjectList({ onOpen }) {
   const [projects, setProjects] = useState([])
@@ -27,7 +28,7 @@ export default function ProjectList({ onOpen }) {
       <header className="pl-header">
         <div className="pl-header-inner">
           <div className="pl-logo">
-            <span className="pl-logo-icon" aria-hidden="true">♿</span>
+            <span className="pl-logo-icon" aria-hidden="true"><Icon name="accessibility_new" size="lg" /></span>
             <div>
               <h1 className="pl-title">Tillgänglighetsgranskaren</h1>
               <span className="pl-version">WCAG 2.2 · EAA 2025</span>
@@ -42,7 +43,7 @@ export default function ProjectList({ onOpen }) {
       <main className="pl-main">
         {projects.length === 0 ? (
           <div className="pl-empty">
-            <div className="pl-empty-icon" aria-hidden="true">📋</div>
+            <div className="pl-empty-icon" aria-hidden="true"><Icon name="assignment" size="xl" /></div>
             <h2>Inga projekt ännu</h2>
             <p>Skapa ett nytt granskningsprojekt för att börja dokumentera tillgänglighetsproblem.</p>
             <button className="btn btn-primary" onClick={() => setFormProject(null)}>
@@ -160,7 +161,7 @@ export function Modal({ onClose, label, children }) {
         onKeyDown={trapKeyDown}
       >
         <button className="modal-close" onClick={onClose} aria-label="Stäng dialog">
-          ×
+          <Icon name="close" />
         </button>
         {children}
       </div>

@@ -3,6 +3,7 @@ import { getProject, getFindings, saveFinding, deleteFinding } from '../store/st
 import { wcag22 } from '../data/wcag22.js'
 import FindingForm from './FindingForm.jsx'
 import { toast } from './Toast.jsx'
+import Icon from './Icon.jsx'
 
 const SEVERITY_LABEL  = { critical: 'Kritisk', high: 'Hög', medium: 'Medium', low: 'Låg' }
 const STATUS_LABEL    = { open: 'Öppen', 'in-progress': 'Pågår', fixed: 'Åtgärdad', 'wont-fix': 'Åtgärdas ej' }
@@ -132,7 +133,7 @@ export default function AuditView({ projectId, initialFindingId, onBack, onOpenO
       <header className="av-header">
         <nav className="av-breadcrumb" aria-label="Navigering">
           <button className="av-crumb-link" onClick={onBack}>Dashboard</button>
-          <span className="av-crumb-sep" aria-hidden="true">›</span>
+          <span className="av-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
           {onOpenOverview ? (
             <button className="av-crumb-link" onClick={() => onOpenOverview(projectId)}>
               {project.name}
@@ -140,7 +141,7 @@ export default function AuditView({ projectId, initialFindingId, onBack, onOpenO
           ) : (
             <span className="av-crumb-text">{project.name}</span>
           )}
-          <span className="av-crumb-sep" aria-hidden="true">›</span>
+          <span className="av-crumb-sep" aria-hidden="true"><Icon name="chevron_right" size="sm" /></span>
           <span className="av-crumb-current">Granskning</span>
         </nav>
 
@@ -266,7 +267,7 @@ export default function AuditView({ projectId, initialFindingId, onBack, onOpenO
             />
           ) : (
             <div className="ff-empty">
-              <div className="ff-empty-icon" aria-hidden="true">🔍</div>
+              <div className="ff-empty-icon" aria-hidden="true"><Icon name="search" size="xl" /></div>
               <p className="ff-empty-title">Ingen granskning öppen</p>
               <p className="ff-empty-sub">Välj ett fynd i listan eller skapa ett nytt för att börja.</p>
               <button className="btn btn-primary" onClick={handleNewFinding}>+ Nytt fynd</button>
@@ -425,7 +426,7 @@ function FindingSummary({ finding, findingNum, onEdit, onDelete, onStatusChange 
               Ta bort fynd
             </button>
             <button className="btn btn-primary btn-sm" onClick={onEdit}>
-              Redigera fynd →
+              Redigera fynd <Icon name="arrow_forward" />
             </button>
           </>
         )}

@@ -3,6 +3,7 @@ import { wcag22 } from '../data/wcag22.js'
 import { eaaRequirements } from '../data/eaa.js'
 import { saveFinding, calculateSeverity } from '../store/storage.js'
 import { toast } from './Toast.jsx'
+import Icon from './Icon.jsx'
 
 /* ─── Constants ─────────────────────────────────────────────────────────────── */
 
@@ -188,7 +189,7 @@ export default function FindingForm({ project, finding, onSaved, onNew, onCancel
                   tabIndex={active ? 0 : -1}
                 >
                   <span className="ff-step-dot" aria-hidden="true">
-                    {done ? '✓' : s.id}
+                    {done ? <Icon name="check" size="sm" /> : s.id}
                   </span>
                   {s.label}
                   {done && <span className="sr-only"> (klart)</span>}
@@ -226,14 +227,14 @@ export default function FindingForm({ project, finding, onSaved, onNew, onCancel
             <div className="ff-nav-left">
               {step > 1 && (
                 <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s - 1)}>
-                  ← Föregående
+                  <Icon name="arrow_back" /> Föregående
                 </button>
               )}
             </div>
             <div className="ff-nav-right">
               {step < 5 && (
                 <button className="btn btn-secondary btn-sm" onClick={() => setStep(s => s + 1)}>
-                  Nästa →
+                  Nästa <Icon name="arrow_forward" />
                 </button>
               )}
             </div>
@@ -628,7 +629,7 @@ function WcagSearch({ value, onChange }) {
           <span className="combobox-selected-name">{selected.nameSwedish}</span>
           {selected.eaaCritical && <span className="badge badge-eaa">EAA</span>}
           <button type="button" className="combobox-clear" onClick={clear} aria-label="Ta bort valt kriterium">
-            ×
+            <Icon name="close" size="sm" />
           </button>
         </div>
       ) : (
@@ -805,7 +806,7 @@ function ScreenshotUpload({ value, onChange }) {
             className="sr-only"
             onChange={e => handleFile(e.target.files[0])}
           />
-          <span className="screenshot-icon" aria-hidden="true">📷</span>
+          <span className="screenshot-icon" aria-hidden="true"><Icon name="photo_camera" size="lg" /></span>
           <span>
             Dra och släpp, klicka för att välja, eller tryck{' '}
             <kbd className="screenshot-kbd">{pasteKey}</kbd>

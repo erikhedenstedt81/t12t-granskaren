@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { getProject, getFindings, getEaaStatus } from '../store/storage.js'
 import { buildReportHtml } from '../report/htmlExport.js'
+import Icon from './Icon.jsx'
 
 /* ─── Default settings ──────────────────────────────────────────────────────── */
 
@@ -63,7 +64,7 @@ export default function CustomerReport({ projectId, onBack }) {
       <header className="cr-toolbar">
         <div className="cr-toolbar-left">
           <button className="cr-back btn-ghost" onClick={onBack} aria-label="Tillbaka">
-            ← Tillbaka
+            <Icon name="arrow_back" /> Tillbaka
           </button>
           <div className="cr-title-block">
             <span className="cr-title">
@@ -77,13 +78,13 @@ export default function CustomerReport({ projectId, onBack }) {
             className="btn btn-secondary btn-sm"
             onClick={() => setShowSettings(true)}
           >
-            ⚙ {lang === 'en' ? 'Settings' : 'Inställningar'}
+            <Icon name="settings" /> {lang === 'en' ? 'Settings' : 'Inställningar'}
           </button>
           <button className="btn btn-secondary btn-sm" onClick={exportHtml}>
-            ↓ {lang === 'en' ? 'Export HTML' : 'Exportera HTML'}
+            <Icon name="download" /> {lang === 'en' ? 'Export HTML' : 'Exportera HTML'}
           </button>
           <button className="btn btn-primary btn-sm" onClick={exportPdf}>
-            🖨 {lang === 'en' ? 'Print / PDF' : 'Skriv ut / PDF'}
+            <Icon name="print" /> {lang === 'en' ? 'Print / PDF' : 'Skriv ut / PDF'}
           </button>
         </div>
       </header>
@@ -151,7 +152,7 @@ function SettingsModal({ settings, onChange, onClose, lang }) {
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-box cr-settings-box" role="dialog" aria-modal="true" aria-label={L ? 'Report settings' : 'Rapportinställningar'}>
-        <button className="modal-close" onClick={onClose} aria-label={L ? 'Close' : 'Stäng'}>×</button>
+        <button className="modal-close" onClick={onClose} aria-label={L ? 'Close' : 'Stäng'}><Icon name="close" /></button>
         <h2 className="pf-title">{L ? 'Report Settings' : 'Rapportinställningar'}</h2>
 
         {/* Language */}

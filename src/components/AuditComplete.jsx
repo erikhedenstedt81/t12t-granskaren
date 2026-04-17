@@ -3,6 +3,7 @@ import { getFindings, saveProject } from '../store/storage.js'
 import { wcag22 } from '../data/wcag22.js'
 import { DIGG_EXTRA_CRITERIA } from '../data/diggManual.js'
 import JiraExport from './JiraExport.jsx'
+import Icon from './Icon.jsx'
 
 const ALL_CRITERIA = [...wcag22, ...DIGG_EXTRA_CRITERIA]
 
@@ -60,7 +61,7 @@ export default function AuditComplete({
 
         {/* ── Header ── */}
         <div className="ac-header">
-          <div className="ac-check-icon" aria-hidden="true">✓</div>
+          <div className="ac-check-icon" aria-hidden="true"><Icon name="check" size="xl" /></div>
           <div>
             <h1 className="ac-title" id="ac-title">Granskning slutförd</h1>
             <p className="ac-meta">
@@ -79,17 +80,17 @@ export default function AuditComplete({
             <p className="ac-total">{total} kriterier granskade</p>
             <ul className="ac-stat-list">
               <li className="ac-stat ac-stat-passed">
-                <span className="ac-stat-icon" aria-hidden="true">✓</span>
+                <span className="ac-stat-icon"><Icon name="check" /></span>
                 <span className="ac-stat-label">Godkända</span>
                 <span className="ac-stat-count">{passed}</span>
               </li>
               <li className="ac-stat ac-stat-finding">
-                <span className="ac-stat-icon" aria-hidden="true">✗</span>
+                <span className="ac-stat-icon"><Icon name="close" /></span>
                 <span className="ac-stat-label">Fynd dokumenterade</span>
                 <span className="ac-stat-count">{finding}</span>
               </li>
               <li className="ac-stat ac-stat-na">
-                <span className="ac-stat-icon" aria-hidden="true">–</span>
+                <span className="ac-stat-icon"><Icon name="remove" /></span>
                 <span className="ac-stat-label">Ej applicerbara</span>
                 <span className="ac-stat-count">{na}</span>
               </li>
@@ -101,13 +102,13 @@ export default function AuditComplete({
             <h2 className="ac-section-title" id="ac-sev-heading">Fynd per allvarlighetsgrad</h2>
             <ul className="ac-sev-list">
               {[
-                { key: 'critical', label: 'Kritiska',  dot: '🔴' },
-                { key: 'high',     label: 'Höga',      dot: '🟠' },
-                { key: 'medium',   label: 'Medium',    dot: '🟡' },
-                { key: 'low',      label: 'Låga',      dot: '🟢' },
-              ].map(({ key, label, dot }) => (
+                { key: 'critical', label: 'Kritiska' },
+                { key: 'high',     label: 'Höga'     },
+                { key: 'medium',   label: 'Medium'   },
+                { key: 'low',      label: 'Låga'     },
+              ].map(({ key, label }) => (
                 <li key={key} className="ac-sev-item">
-                  <span className="ac-sev-dot" aria-hidden="true">{dot}</span>
+                  <Icon name="circle" className={`ac-sev-dot icon-${key}`} />
                   <span className="ac-sev-label">{label}</span>
                   <span className="ac-sev-count">{sevCounts[key]}</span>
                 </li>
@@ -141,7 +142,7 @@ export default function AuditComplete({
                 Gå till projektöversikt
               </button>
               <button className="btn btn-ghost" onClick={onContinue}>
-                ← Fortsätt granska
+                <Icon name="arrow_back" /> Fortsätt granska
               </button>
             </div>
           </section>

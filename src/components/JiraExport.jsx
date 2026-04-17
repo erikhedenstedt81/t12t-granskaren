@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { getFindings } from '../store/storage.js'
 import { toast } from './Toast.jsx'
 import { useFocusTrap } from '../hooks/useFocusTrap.js'
+import Icon from './Icon.jsx'
 
 // ─── Priority / status maps ───────────────────────────────────────────────────
 
@@ -140,7 +141,7 @@ export default function JiraExport({ project, onClose }) {
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
       <div ref={dialogRef} className="modal-box je-box" role="dialog" aria-modal="true" aria-label="Jira-export" onKeyDown={trapKeyDown}>
-        <button className="modal-close" onClick={onClose} aria-label="Stäng">×</button>
+        <button className="modal-close" onClick={onClose} aria-label="Stäng"><Icon name="close" /></button>
         <h2 className="pf-title">Jira-export</h2>
         <p className="je-subtitle">{project.clientName} · {project.name}</p>
 
@@ -232,7 +233,7 @@ export default function JiraExport({ project, onClose }) {
             onClick={handleDownload}
             disabled={!output}
           >
-            ↓ Ladda ned {format.toUpperCase()}
+            <Icon name="download" /> Ladda ned {format.toUpperCase()}
           </button>
         </div>
       </div>

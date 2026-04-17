@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { getProjects, getFindings } from '../store/storage.js'
+import Icon from './Icon.jsx'
 
 /**
  * GlobalSearch — searches all findings across all projects in real time.
@@ -115,7 +116,7 @@ export default function GlobalSearch({ onNavigate }) {
     <div className="gs-root" role="search">
       <label htmlFor="gs-input" className="sr-only">Sök fynd</label>
       <div className="gs-input-wrap">
-        <span className="gs-icon" aria-hidden="true">🔍</span>
+        <span className="gs-icon" aria-hidden="true"><Icon name="search" /></span>
         <input
           id="gs-input"
           ref={inputRef}
@@ -138,7 +139,7 @@ export default function GlobalSearch({ onNavigate }) {
             onClick={() => { setQuery(''); setOpen(false); inputRef.current?.focus() }}
             aria-label="Rensa sökning"
           >
-            ×
+            <Icon name="close" size="sm" />
           </button>
         )}
       </div>
