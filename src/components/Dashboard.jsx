@@ -6,9 +6,7 @@ import { Modal } from './ProjectList.jsx'
 import GlobalSearch from './GlobalSearch.jsx'
 import Icon from './Icon.jsx'
 
-const SEVERITY_ORDER = { critical: 4, high: 3, medium: 2, low: 1 }
-
-export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditByIds, onOpenSettings, onOpenGuidedSetup }) {
+export default function Dashboard({ onOpenOverview, onOpenAuditByIds, onOpenSettings }) {
   const [projects,    setProjects]    = useState([])
   const [globalStats, setGlobalStats] = useState({ active: 0, open: 0, critical: 0, fixedRecent: 0 })
   const [formProject, setFormProject] = useState(undefined) // undefined=closed, null=new, obj=edit
@@ -62,10 +60,10 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
       <div className="db-main">
         {/* ── Global stats ── */}
         <div className="db-stats" role="list" aria-label="Översiktsstatistik">
-          <StatCard role="listitem" label="Aktiva projekt"           value={globalStats.active}      icon="folder"       iconColor="icon-brand"   />
-          <StatCard role="listitem" label="Öppna fynd"               value={globalStats.open}        icon="search"       iconColor="icon-brand"   />
-          <StatCard role="listitem" label="Kritiska fynd"            value={globalStats.critical}    icon="error"        iconColor="icon-danger"  accent />
-          <StatCard role="listitem" label="Åtgärdade (30 dagar)"    value={globalStats.fixedRecent} icon="check_circle" iconColor="icon-success" positive />
+          <StatCard role="listitem" label="Aktiva projekt"        value={globalStats.active}      icon="folder"       iconColor="icon-brand"   />
+          <StatCard role="listitem" label="Öppna fynd"            value={globalStats.open}        icon="search"       iconColor="icon-brand"   />
+          <StatCard role="listitem" label="Kritiska fynd"         value={globalStats.critical}    icon="error"        iconColor="icon-danger"  accent />
+          <StatCard role="listitem" label="Åtgärdade (30 dagar)" value={globalStats.fixedRecent} icon="check_circle" iconColor="icon-success" positive />
         </div>
 
         {/* ── Projects ── */}
@@ -89,9 +87,7 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
                 <ProjectDashCard
                   key={p.id}
                   project={p}
-                  onAudit={e => { e.stopPropagation(); onOpenAudit(p) }}
-                  onOverview={e => { e.stopPropagation(); onOpenOverview(p) }}
-                  onGuidedSetup={e => { e.stopPropagation(); onOpenGuidedSetup && onOpenGuidedSetup(p.id) }}
+                  onOverview={() => onOpenOverview(p)}
                   onEdit={e => { e.stopPropagation(); setFormProject(p) }}
                   onDelete={e => {
                     e.stopPropagation()
@@ -112,9 +108,9 @@ export default function Dashboard({ onOpenAudit, onOpenOverview, onOpenAuditById
             project={formProject}
             onSaved={saved => {
               setFormProject(undefined)
-              if (!formProject && saved && onOpenGuidedSetup) {
-                // Nytt projekt → gå direkt till guidad granskning
-                onOpenGuidedSetup(saved.id, true)
+              if (!formProject && saved) {
+                // Nytt projekt → gå till projektöversikten
+                onOpenOverview(saved)
               } else {
                 // Redigering → stanna på dashboarden
                 loadAll()
@@ -144,7 +140,7 @@ function StatCard({ label, value, icon, iconColor = '', accent, positive }) {
 
 /* ─── ProjectDashCard ──────────────────────────────────────────────────────── */
 
-function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, onDelete }) {
+function ProjectDashCard({ project, onOverview, onEdit, onDelete }) {
   const findings = useMemo(() => getFindings(project.id), [project.id])
 
   const counts = useMemo(() => {
@@ -153,7 +149,6 @@ function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, 
     return c
   }, [findings])
 
-  // Coverage: % of 87 WCAG criteria that appear in any finding
   const criteriaReviewed = useMemo(
     () => new Set(findings.map(f => f.wcagCriterionId).filter(Boolean)).size,
     [findings]
@@ -165,12 +160,19 @@ function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, 
     : '–'
 
   const openCount = findings.filter(f => f.status === 'open' || f.status === 'in-progress').length
+  const displayName = project.name?.trim() || 'Namnlöst projekt'
 
   return (
-    <article className="db-project-card" aria-label={project.name?.trim() || 'Namnlöst projekt'}>
+    <article
+      className="db-project-card"
+      aria-label={`${displayName} – öppna projektet`}
+      onClick={onOverview}
+      tabIndex={0}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onOverview())}
+    >
       <div className="db-card-top">
         <div className="db-card-info">
-          <h3 className="db-card-name">{project.name?.trim() || 'Namnlöst projekt'}</h3>
+          <h3 className="db-card-name">{displayName}</h3>
           <p className="db-card-client">{project.clientName}</p>
           {project.url && (
             <a
@@ -202,17 +204,11 @@ function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, 
       </div>
 
       <div className="db-card-actions">
-        <button className="btn btn-primary btn-sm" onClick={onGuidedSetup}
-          title="Starta en guidad granskning med DIGG-metodik">
-          Guidad granskning
-        </button>
-        <button className="btn btn-secondary btn-sm" onClick={onAudit}
-          title="Öppna fri granskning – dokumentera fynd manuellt">
-          Fri granskning
-        </button>
-        <button className="btn btn-secondary btn-sm" onClick={onOverview}
-          title="Visa projektöversikt, rapport och EAA-status">
-          Projektöversikt
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={e => { e.stopPropagation(); onOverview() }}
+        >
+          Öppna projekt <Icon name="arrow_forward" size="sm" />
         </button>
         <div className="db-card-links">
           <button className="btn-link" onClick={onEdit}>Redigera</button>
@@ -226,12 +222,12 @@ function ProjectDashCard({ project, onAudit, onOverview, onGuidedSetup, onEdit, 
 /* ─── ProgressRing ─────────────────────────────────────────────────────────── */
 
 function ProgressRing({ percent, reviewed }) {
-  const size       = 60
-  const stroke     = 5
-  const radius     = (size - stroke) / 2
-  const circ       = 2 * Math.PI * radius
-  const offset     = circ - (percent / 100) * circ
-  const color      = percent >= 70 ? 'var(--low)' : percent >= 40 ? 'var(--medium)' : 'var(--high)'
+  const size   = 60
+  const stroke = 5
+  const radius = (size - stroke) / 2
+  const circ   = 2 * Math.PI * radius
+  const offset = circ - (percent / 100) * circ
+  const color  = percent >= 70 ? 'var(--low)' : percent >= 40 ? 'var(--medium)' : 'var(--high)'
 
   return (
     <div

@@ -887,12 +887,21 @@ kbd { font-family: var(--font-mono); font-size: 10px; background: var(--bg); bor
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
   padding: 20px; display: flex; flex-direction: column; gap: 14px;
   transition: border-color var(--transition), box-shadow var(--transition);
+  cursor: pointer;
 }
-.db-project-card:hover { border-color: var(--border); box-shadow: var(--shadow); }
+.db-project-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent), var(--shadow);
+}
+.db-project-card:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
 
 .db-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .db-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.db-card-name   { font-size: 15px; font-weight: 600; color: var(--text); }
+.db-card-name   { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
 .db-card-client { font-size: 13px; color: var(--text-2); }
 .db-card-url    { font-size: 11px; color: var(--primary); font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
 .db-card-url:hover { text-decoration: underline; }

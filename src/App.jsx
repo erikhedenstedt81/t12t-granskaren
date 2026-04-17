@@ -64,11 +64,7 @@ export default function App() {
           <AuditSetup
             project={getProject(route.projectId)}
             onDone={project => setRoute({ view: 'guided', projectId: project.id })}
-            onCancel={() =>
-              route.from === 'dashboard'
-                ? goToDashboard()
-                : setRoute({ view: 'overview', projectId: route.projectId })
-            }
+            onCancel={() => setRoute({ view: 'overview', projectId: route.projectId })}
           />
         )}
 
@@ -98,15 +94,11 @@ export default function App() {
 
         {route.view === 'dashboard' && (
           <Dashboard
-            onOpenAudit={project    => setRoute({ view: 'audit',    projectId: project.id })}
             onOpenOverview={project => setRoute({ view: 'overview', projectId: project.id })}
             onOpenAuditByIds={(projectId, findingId) =>
               setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
             }
             onOpenSettings={() => setShowSettings(true)}
-            onOpenGuidedSetup={(projectId, fromDashboard) =>
-              setRoute({ view: 'setup', projectId, from: fromDashboard ? 'dashboard' : undefined })
-            }
           />
         )}
       </main>
