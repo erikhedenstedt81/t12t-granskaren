@@ -13,6 +13,7 @@ import {
   getOrderedCriteriaIds,
 } from '../data/diggManual.js'
 import FindingForm from './FindingForm.jsx'
+import AuditComplete from './AuditComplete.jsx'
 import { toast } from './Toast.jsx'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -36,15 +37,16 @@ function urlKey(url) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function GuidedAuditView({ projectId, onBack }) {
+export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
   const [project,      setProject]      = useState(() => getProject(projectId))
   const [progress,     setProgress]     = useState(() => getGuidedProgress(projectId))
   const [currentId,    setCurrentId]    = useState(null)
   const [currentUrl,   setCurrentUrl]   = useState(() => getProject(projectId)?.url ?? '')
   const [urlInput,     setUrlInput]     = useState('')
   const [editingUrl,   setEditingUrl]   = useState(false)
-  const [checkedItems, setCheckedItems] = useState({})
-  const [showForm,     setShowForm]     = useState(false)
+  const [checkedItems,   setCheckedItems]   = useState({})
+  const [showForm,       setShowForm]       = useState(false)
+  const [showComplete,   setShowComplete]   = useState(false)
 
   const answers = project?.auditContext?.answers ?? {}
 
@@ -83,6 +85,7 @@ export default function GuidedAuditView({ projectId, onBack }) {
 
   const totalCount  = orderedIds.length
   const progressPct = totalCount > 0 ? Math.round((reviewedCount / totalCount) * 100) : 0
+  const isComplete  = totalCount > 0 && reviewedCount === totalCount
 
   // ── Mutations ────────────────────────────────────────────────────────────────
 
@@ -139,6 +142,20 @@ export default function GuidedAuditView({ projectId, onBack }) {
 
   if (!project) return null
 
+  // ── Avslutningsskärm ─────────────────────────────────────────────────────────
+  if (showComplete) {
+    return (
+      <AuditComplete
+        project={project}
+        urlProgress={progress[urlKey(currentUrl)] ?? {}}
+        orderedIds={orderedIds}
+        onContinue={() => setShowComplete(false)}
+        onBack={onBack}
+        onOpenReport={() => onOpenReport(projectId)}
+      />
+    )
+  }
+
   return (
     <div className="ga-root">
 
@@ -183,6 +200,15 @@ export default function GuidedAuditView({ projectId, onBack }) {
             {reviewedCount}/{totalCount} ({progressPct}%)
           </span>
         </div>
+
+        <button
+          className={`ga-complete-btn ${isComplete ? 'ga-complete-btn-ready' : 'ga-complete-btn-dim'}`}
+          onClick={() => isComplete && setShowComplete(true)}
+          aria-disabled={!isComplete}
+          title={!isComplete ? 'Alla kriterier måste vara granskade' : 'Avsluta granskningen'}
+        >
+          ✓ Avsluta granskning
+        </button>
       </header>
 
       {/* ── URL strip ── */}

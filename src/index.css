@@ -1878,6 +1878,187 @@ textarea:focus-visible {
 }
 
 /* ═══════════════════════════════════════════════════════
+   GUIDED AUDIT – AVSLUTA-KNAPP (.ga-complete-btn)
+═══════════════════════════════════════════════════════ */
+.ga-complete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.ga-complete-btn-ready {
+  background: var(--success-600);
+  border-color: var(--success-700);
+  color: var(--white);
+  cursor: pointer;
+}
+.ga-complete-btn-ready:hover {
+  background: var(--success-700);
+  border-color: var(--success-700);
+}
+.ga-complete-btn-ready:focus-visible {
+  outline: 2px solid var(--success-500);
+  outline-offset: 2px;
+}
+.ga-complete-btn-dim {
+  background: var(--surface-raised);
+  border-color: var(--border);
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════
+   AUDIT COMPLETE (.ac-*)
+═══════════════════════════════════════════════════════ */
+.ac-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--surface-2);
+  padding: 24px;
+  overflow-y: auto;
+}
+.ac-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  width: 100%;
+  max-width: 560px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* Header */
+.ac-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 32px 28px;
+  background: var(--success-600);
+  color: var(--white);
+}
+.ac-check-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ac-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--white);
+}
+.ac-meta {
+  font-size: 13px;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* Body */
+.ac-body {
+  padding: 0 32px 32px;
+}
+.ac-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.ac-section:first-child {
+  border-top: none;
+}
+.ac-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-3);
+  margin: 0 0 14px;
+}
+.ac-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 16px;
+}
+
+/* Stat list */
+.ac-stat-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ac-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-1);
+}
+.ac-stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.ac-stat-passed  .ac-stat-icon { background: var(--low-bg);      color: var(--low);      }
+.ac-stat-finding .ac-stat-icon { background: var(--critical-bg); color: var(--critical); }
+.ac-stat-na      .ac-stat-icon { background: var(--surface-2);   color: var(--text-3);   }
+.ac-stat-label { flex: 1; }
+.ac-stat-count { font-weight: 700; font-size: 16px; min-width: 24px; text-align: right; }
+
+/* Severity list */
+.ac-sev-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ac-sev-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+.ac-sev-dot  { font-size: 16px; flex-shrink: 0; }
+.ac-sev-label { flex: 1; color: var(--text-1); }
+.ac-sev-count { font-weight: 700; color: var(--text-1); min-width: 24px; text-align: right; }
+
+/* EAA */
+.ac-eaa-text {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+/* Actions */
+.ac-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════
    REDUCED MOTION
 ═══════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {

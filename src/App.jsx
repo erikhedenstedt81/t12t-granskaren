@@ -78,6 +78,7 @@ export default function App() {
             onOpenAudit={(projectId, findingId) =>
               setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
             }
+            onOpenReport={projectId => setRoute({ view: 'report', projectId })}
           />
         )}
 
