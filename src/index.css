@@ -2368,6 +2368,53 @@ textarea:focus-visible {
   text-align: center;
 }
 
+/* Template / language toggle */
+.vp-toggle-group {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.vp-toggle-btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--surface);
+  border: none;
+  border-right: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: center;
+}
+.vp-toggle-btn:last-child { border-right: none; }
+.vp-toggle-btn:hover { background: var(--surface-2); color: var(--text); }
+.vp-toggle-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.vp-toggle-active {
+  background: var(--primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* Export language row */
+.vp-export-lang-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.vp-export-lang-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* Actions */
 .vp-generate-btn {
   width: 100%;

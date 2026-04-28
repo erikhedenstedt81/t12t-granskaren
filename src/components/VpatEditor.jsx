@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { getProject, getVpat, saveVpat, generateVpatFromFindings } from '../store/storage.js'
+import { getProject, getVpat, saveVpat, generateVpatFromFindings, getEaaStatus } from '../store/storage.js'
 import { wcag22 } from '../data/wcag22.js'
+import { buildVpatHtml } from '../report/vpatHtmlExport.js'
 import Icon from './Icon.jsx'
 import { toast } from './Toast.jsx'
 
@@ -42,6 +43,7 @@ export default function VpatEditor({ projectId, onBack }) {
   const project     = getProject(projectId)
   const [vpat,      setVpat]      = useState(() => getVpat(projectId) ?? defaultVpat(project))
   const [saveState, setSaveState] = useState('saved') // 'saving' | 'saved'
+  const [exportLang, setExportLang] = useState('en')  // 'en' | 'sv'
   const saveTimer   = useRef(null)
 
   const displayName = project?.name?.trim() || 'Namnlöst projekt'
@@ -113,6 +115,22 @@ export default function VpatEditor({ projectId, onBack }) {
     'not-evaluated':      entries.filter(c => c.conformanceLevel === 'not-evaluated').length,
   }
   const totalFilled = entries.length
+
+  /* ── HTML export ────────────────────────────────────────────────────────── */
+
+  function handleExportHtml() {
+    const eaaStatus = getEaaStatus(projectId)
+    const html      = buildVpatHtml(vpat, eaaStatus, exportLang)
+    const blob      = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const url       = URL.createObjectURL(blob)
+    const a         = document.createElement('a')
+    const safe      = (vpat.productName || 'vpat').replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase()
+    a.href          = url
+    a.download      = `vpat-${safe}-${vpat.reportDate || new Date().toISOString().slice(0, 10)}.html`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast('VPAT exporterad som HTML ✓')
+  }
 
   /* ── Text export ─────────────────────────────────────────────────────────── */
 
@@ -309,6 +327,32 @@ export default function VpatEditor({ projectId, onBack }) {
               </p>
             </section>
 
+            {/* Template */}
+            <section className="vp-sidebar-section" aria-labelledby="vp-template-heading">
+              <h2 className="vp-sidebar-heading" id="vp-template-heading">Mall</h2>
+              <div className="vp-toggle-group" role="group" aria-label="VPAT-mall">
+                <button
+                  className={`vp-toggle-btn ${vpat.template === 'wcag22' ? 'vp-toggle-active' : ''}`}
+                  onClick={() => setField('template', 'wcag22')}
+                  aria-pressed={vpat.template === 'wcag22'}
+                >
+                  WCAG
+                </button>
+                <button
+                  className={`vp-toggle-btn ${vpat.template === 'en301549' ? 'vp-toggle-active' : ''}`}
+                  onClick={() => setField('template', 'en301549')}
+                  aria-pressed={vpat.template === 'en301549'}
+                >
+                  EN 301 549
+                </button>
+              </div>
+              {vpat.template === 'en301549' && (
+                <p className="vp-generate-hint" style={{ marginTop: 6 }}>
+                  Inkluderar EN 301 549-kapitel 9–12 i HTML-exporten. Kapitel 12 hämtas från projektets EAA-checklista.
+                </p>
+              )}
+            </section>
+
             {/* Actions */}
             <section className="vp-sidebar-section" aria-labelledby="vp-actions-heading">
               <h2 className="vp-sidebar-heading" id="vp-actions-heading">Generera &amp; exportera</h2>
@@ -319,9 +363,38 @@ export default function VpatEditor({ projectId, onBack }) {
                 Fyller i konformitetsnivåer automatiskt baserat på dokumenterade fynd och guidad granskning.
                 Befintlig produktinfo bevaras.
               </p>
+
+              {/* Language toggle for export */}
+              <div className="vp-export-lang-row">
+                <span className="vp-export-lang-label">Exportspråk</span>
+                <div className="vp-toggle-group" role="group" aria-label="Exportspråk">
+                  <button
+                    className={`vp-toggle-btn ${exportLang === 'sv' ? 'vp-toggle-active' : ''}`}
+                    onClick={() => setExportLang('sv')}
+                    aria-pressed={exportLang === 'sv'}
+                  >
+                    🇸🇪 Svenska
+                  </button>
+                  <button
+                    className={`vp-toggle-btn ${exportLang === 'en' ? 'vp-toggle-active' : ''}`}
+                    onClick={() => setExportLang('en')}
+                    aria-pressed={exportLang === 'en'}
+                  >
+                    🇬🇧 English
+                  </button>
+                </div>
+              </div>
+
+              <button
+                className="btn btn-primary vp-export-btn"
+                onClick={handleExportHtml}
+              >
+                <Icon name="html" size="sm" /> Exportera VPAT (HTML)
+              </button>
               <button
                 className="btn btn-secondary vp-export-btn"
                 onClick={handleExportText}
+                style={{ marginTop: 6 }}
               >
                 <Icon name="download" size="sm" /> Exportera som text (.txt)
               </button>
