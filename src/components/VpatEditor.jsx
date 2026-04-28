@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { getProject, getVpat, saveVpat, generateVpatFromFindings, getEaaStatus } from '../store/storage.js'
 import { wcag22 } from '../data/wcag22.js'
 import { buildVpatHtml } from '../report/vpatHtmlExport.js'
+import { buildVpatDocx } from '../report/vpatDocxExport.js'
 import Icon from './Icon.jsx'
 import { toast } from './Toast.jsx'
 
@@ -43,8 +44,9 @@ export default function VpatEditor({ projectId, onBack }) {
   const project     = getProject(projectId)
   const [vpat,      setVpat]      = useState(() => getVpat(projectId) ?? defaultVpat(project))
   const [saveState, setSaveState] = useState('saved') // 'saving' | 'saved'
-  const [exportLang, setExportLang] = useState('en')  // 'en' | 'sv'
-  const saveTimer   = useRef(null)
+  const [exportLang,    setExportLang]    = useState('en')   // 'en' | 'sv'
+  const [docxExporting, setDocxExporting] = useState(false)
+  const saveTimer = useRef(null)
 
   const displayName = project?.name?.trim() || 'Namnlöst projekt'
 
@@ -115,6 +117,30 @@ export default function VpatEditor({ projectId, onBack }) {
     'not-evaluated':      entries.filter(c => c.conformanceLevel === 'not-evaluated').length,
   }
   const totalFilled = entries.length
+
+  /* ── Word export ────────────────────────────────────────────────────────── */
+
+  async function handleExportDocx() {
+    if (docxExporting) return
+    setDocxExporting(true)
+    try {
+      const eaaStatus = getEaaStatus(projectId)
+      const blob      = await buildVpatDocx(vpat, eaaStatus, exportLang)
+      const url       = URL.createObjectURL(blob)
+      const a         = document.createElement('a')
+      const safe      = (vpat.productName || 'vpat').replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase()
+      a.href          = url
+      a.download      = `${safe}-VPAT-${vpat.reportDate || new Date().toISOString().slice(0, 10)}.docx`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast('VPAT exporterad som Word (.docx) ✓')
+    } catch (err) {
+      console.error('VPAT Word export failed:', err)
+      toast('Export misslyckades – se konsolen för detaljer')
+    } finally {
+      setDocxExporting(false)
+    }
+  }
 
   /* ── HTML export ────────────────────────────────────────────────────────── */
 
@@ -393,6 +419,17 @@ export default function VpatEditor({ projectId, onBack }) {
               </button>
               <button
                 className="btn btn-secondary vp-export-btn"
+                onClick={handleExportDocx}
+                disabled={docxExporting}
+                style={{ marginTop: 6 }}
+                aria-busy={docxExporting}
+              >
+                {docxExporting
+                  ? <><Icon name="sync" size="sm" /> Genererar Word…</>
+                  : <><Icon name="description" size="sm" /> Exportera VPAT (Word)</>}
+              </button>
+              <button
+                className="btn btn-ghost vp-export-btn"
                 onClick={handleExportText}
                 style={{ marginTop: 6 }}
               >
