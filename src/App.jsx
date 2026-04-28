@@ -6,6 +6,7 @@ import CustomerReport   from './components/CustomerReport.jsx'
 import Settings         from './components/Settings.jsx'
 import AuditSetup       from './components/AuditSetup.jsx'
 import GuidedAuditView  from './components/GuidedAuditView.jsx'
+import VpatEditor       from './components/VpatEditor.jsx'
 import { ToastContainer } from './components/Toast.jsx'
 import { getProject } from './store/storage.js'
 
@@ -20,7 +21,7 @@ export default function App() {
   // ── Dynamic page title ──────────────────────────────────────────────────────
   useEffect(() => {
     let title = BASE_TITLE
-    if (['audit', 'overview', 'report', 'setup', 'guided'].includes(route.view)) {
+    if (['audit', 'overview', 'report', 'setup', 'guided', 'vpat'].includes(route.view)) {
       const project = getProject(route.projectId)
       if (project) {
         const viewLabel = {
@@ -29,6 +30,7 @@ export default function App() {
           overview: 'Projektöversikt',
           setup:    'Guidad granskning – uppstart',
           guided:   'Guidad granskning',
+          vpat:     'VPAT-editor',
         }[route.view] ?? ''
         const displayName = project.name?.trim() || 'Namnlöst projekt'
         title = `${displayName} – ${viewLabel} | ${BASE_TITLE}`
@@ -76,6 +78,14 @@ export default function App() {
               setRoute({ view: 'audit', projectId, findingId: findingId ?? null })
             }
             onOpenReport={projectId => setRoute({ view: 'report', projectId })}
+            onOpenVpat={projectId => setRoute({ view: 'vpat', projectId })}
+          />
+        )}
+
+        {route.view === 'vpat' && (
+          <VpatEditor
+            projectId={route.projectId}
+            onBack={() => setRoute({ view: 'overview', projectId: route.projectId })}
           />
         )}
 
@@ -89,6 +99,7 @@ export default function App() {
             onOpenReport={projectId => setRoute({ view: 'report', projectId })}
             onOpenGuidedSetup={projectId => setRoute({ view: 'setup', projectId })}
             onOpenGuided={projectId => setRoute({ view: 'guided', projectId })}
+            onOpenVpat={projectId => setRoute({ view: 'vpat', projectId })}
           />
         )}
 

@@ -38,7 +38,7 @@ function urlKey(url) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
+export default function GuidedAuditView({ projectId, onBack, onOpenReport, onOpenVpat }) {
   const [project,      setProject]      = useState(() => getProject(projectId))
   const [progress,     setProgress]     = useState(() => getGuidedProgress(projectId))
   const [currentId,    setCurrentId]    = useState(null)
@@ -153,6 +153,7 @@ export default function GuidedAuditView({ projectId, onBack, onOpenReport }) {
         onContinue={() => setShowComplete(false)}
         onBack={onBack}
         onOpenReport={() => onOpenReport(projectId)}
+        onOpenVpat={onOpenVpat ? () => onOpenVpat(projectId) : null}
       />
     )
   }

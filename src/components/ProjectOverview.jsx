@@ -18,7 +18,7 @@ function getCriterion(id) { return wcag22.find(c => c.id === id) }
 
 /* ─── Root ───────────────────────────────────────────────────────────────────── */
 
-export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpenReport, onOpenGuidedSetup, onOpenGuided }) {
+export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpenReport, onOpenGuidedSetup, onOpenGuided, onOpenVpat }) {
   const [project,       setProject]       = useState(null)
   const [findings,      setFindings]      = useState([])
   const [tab,           setTab]           = useState('findings')
@@ -101,6 +101,14 @@ export default function ProjectOverview({ projectId, onBack, onOpenAudit, onOpen
                   onClick={() => onOpenGuidedSetup(projectId)}
                 >
                   Guidad granskning
+                </button>
+              )}
+              {onOpenVpat && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => onOpenVpat(projectId)}
+                >
+                  <Icon name="assignment" size="sm" /> VPAT
                 </button>
               )}
               <button

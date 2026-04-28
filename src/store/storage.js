@@ -81,6 +81,8 @@ export function deleteProject(id) {
   localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects))
   localStorage.removeItem(findingsStorageKey(id))
   localStorage.removeItem(eaaStorageKey(id))
+  localStorage.removeItem(guidedProgressKey(id))
+  localStorage.removeItem(vpatStorageKey(id))
 }
 
 // ─── Findings ─────────────────────────────────────────────────────────────────
@@ -199,6 +201,12 @@ export function exportAllData() {
     eaaStatus: Object.fromEntries(
       projects.map(p => [p.id, getEaaStatus(p.id)])
     ),
+    guidedProgress: Object.fromEntries(
+      projects.map(p => [p.id, getGuidedProgress(p.id)])
+    ),
+    vpat: Object.fromEntries(
+      projects.map(p => [p.id, getVpat(p.id)]).filter(([, v]) => v !== null)
+    ),
   }
   return JSON.stringify(data, null, 2)
 }
@@ -222,6 +230,12 @@ export function importAllData(jsonString) {
     if (data.eaaStatus?.[project.id]) {
       localStorage.setItem(eaaStorageKey(project.id), JSON.stringify(data.eaaStatus[project.id]))
     }
+    if (data.guidedProgress?.[project.id]) {
+      localStorage.setItem(guidedProgressKey(project.id), JSON.stringify(data.guidedProgress[project.id]))
+    }
+    if (data.vpat?.[project.id]) {
+      localStorage.setItem(vpatStorageKey(project.id), JSON.stringify(data.vpat[project.id]))
+    }
   }
 }
 
@@ -231,6 +245,7 @@ export function clearAllData() {
     localStorage.removeItem(findingsStorageKey(p.id))
     localStorage.removeItem(eaaStorageKey(p.id))
     localStorage.removeItem(guidedProgressKey(p.id))
+    localStorage.removeItem(vpatStorageKey(p.id))
   }
   localStorage.removeItem(PROJECTS_KEY)
   localStorage.removeItem(PROFILE_KEY)
@@ -254,4 +269,113 @@ export function getGuidedProgress(projectId) {
 
 export function saveGuidedProgress(projectId, progress) {
   localStorage.setItem(guidedProgressKey(projectId), JSON.stringify(progress))
+}
+
+// ─── VPAT ─────────────────────────────────────────────────────────────────────
+
+function vpatStorageKey(projectId) {
+  return `a11y_vpat_${projectId}`
+}
+
+export function getVpat(projectId) {
+  const raw = localStorage.getItem(vpatStorageKey(projectId))
+  return raw ? JSON.parse(raw) : null
+}
+
+export function saveVpat(projectId, vpat) {
+  localStorage.setItem(vpatStorageKey(projectId), JSON.stringify(vpat))
+}
+
+/**
+ * Generates a VPAT by reading findings + guided progress for a project.
+ * Preserves existing product info fields when regenerating.
+ * Overwrites criteria entries.
+ */
+export function generateVpatFromFindings(projectId) {
+  const findings       = getFindings(projectId)
+  const project        = getProject(projectId)
+  const guidedProgress = getGuidedProgress(projectId)
+  const notApplicable  = project?.auditContext?.notApplicable ?? []
+  const allUrls        = Object.keys(guidedProgress)
+
+  // Determine per-criterion guided status across all URLs
+  function getGuidedStatus(criterionId) {
+    for (const url of allUrls) {
+      if (guidedProgress[url]?.[criterionId] === 'finding') return 'finding'
+    }
+    for (const url of allUrls) {
+      if (guidedProgress[url]?.[criterionId] === 'passed') return 'passed'
+    }
+    for (const url of allUrls) {
+      if (guidedProgress[url]?.[criterionId] === 'na') return 'na'
+    }
+    return null
+  }
+
+  function buildRemarks(criterionFindings) {
+    return criterionFindings.map((f, index) => {
+      const parts = []
+      const problemText = f.customerDescription || f.description
+      if (problemText) parts.push(`Problem: ${problemText}`)
+      if (f.suggestedFix) parts.push(`Åtgärd: ${f.suggestedFix}`)
+      if (f.url) parts.push(`Sida: ${f.url}`)
+      const findingText = parts.join('\n')
+      return criterionFindings.length > 1
+        ? `Fynd ${index + 1}:\n${findingText}`
+        : findingText
+    }).join('\n\n')
+  }
+
+  const criteria = {}
+  for (const c of wcag22) {
+    const criterionFindings = findings.filter(
+      f => f.wcagCriterionId === c.id && f.status !== 'fixed' && f.status !== 'wont-fix'
+    )
+    const guidedStatus = getGuidedStatus(c.id)
+    const isNA = notApplicable.includes(c.id) || guidedStatus === 'na'
+
+    let conformanceLevel, remarks
+
+    if (criterionFindings.length > 0) {
+      const hasCriticalOrHigh = criterionFindings.some(
+        f => f.severity === 'critical' || f.severity === 'high'
+      )
+      conformanceLevel = hasCriticalOrHigh ? 'does-not-support' : 'partially-supports'
+      remarks = buildRemarks(criterionFindings)
+    } else if (guidedStatus === 'passed') {
+      conformanceLevel = 'supports'
+      remarks = 'Kriteriet uppfylls utan kända brister.'
+    } else if (isNA) {
+      conformanceLevel = 'not-applicable'
+      remarks = 'Kriteriet är inte relevant för denna produkt eller tjänst.'
+    } else {
+      conformanceLevel = 'not-evaluated'
+      remarks = ''
+    }
+
+    criteria[c.id] = {
+      conformanceLevel,
+      conformanceLevelAuto: true,
+      remarks,
+      remarksAuto: remarks !== '',
+    }
+  }
+
+  const existing = getVpat(projectId)
+  const today    = new Date().toISOString().slice(0, 10)
+
+  const vpat = {
+    template:           existing?.template          ?? 'wcag22',
+    productName:        existing?.productName        ?? project?.name        ?? '',
+    productVersion:     existing?.productVersion     ?? '',
+    reportDate:         existing?.reportDate         ?? today,
+    contactName:        existing?.contactName        ?? '',
+    contactEmail:       existing?.contactEmail       ?? '',
+    evaluationMethods:  existing?.evaluationMethods  ?? '',
+    notes:              existing?.notes              ?? '',
+    criteria,
+  }
+
+  saveVpat(projectId, vpat)
+  return vpat
 }

@@ -15,6 +15,7 @@ export default function AuditComplete({
   onContinue,   // → back to guided audit
   onBack,       // → project overview
   onOpenReport, // → customer report
+  onOpenVpat,  // → VPAT editor
 }) {
   const [showJira,  setShowJira]  = useState(false)
   const [showAzure, setShowAzure] = useState(false)
@@ -140,6 +141,11 @@ export default function AuditComplete({
               <button className="btn btn-primary" onClick={onOpenReport}>
                 Generera rapport
               </button>
+              {onOpenVpat && (
+                <button className="btn btn-secondary" onClick={onOpenVpat}>
+                  <Icon name="assignment" size="sm" /> Skapa VPAT
+                </button>
+              )}
               <button className="btn btn-secondary" onClick={() => setShowJira(true)}>
                 Jira-export
               </button>
